@@ -4,7 +4,6 @@ namespace Algorithms;
 
 class Annealing
 {
-
     private $elements = 10;
     private $values = [];
     private $function = null;
