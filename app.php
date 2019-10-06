@@ -3,4 +3,5 @@
 
 require_once 'vendor/autoload.php';
 
-echo 'Hello world';
+$algorithm = new \Algorithms\Annealing;
+$algorithm->run();
