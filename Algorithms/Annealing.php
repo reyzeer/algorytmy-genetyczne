@@ -9,6 +9,7 @@ class Annealing
     private $values = [];
     private $function = null;
     private $gradients = [];
+    private $annealings = [];
 
     public function __construct()
     {
@@ -20,18 +21,21 @@ class Annealing
     public function run(): void
     {
         $this->randomizeValues();
+        $startTime = microtime(true);
         $this->gradients();
-        $annealing = [];
-        foreach ($this->values as $value) {
-            $annealing[] = $this->annealing($value, 0.0001, 0.8, 200);
-        }
+        $endTime =  microtime(true) - $startTime;
+
+        $startTime = microtime(true);
+        $this->annealings();
+        $endTime2 = microtime(true) - $startTime;
+
         usort($this->gradients, static function ($a, $b) {
             return $b[0] <=> $a[0]; });
-        usort($annealing, static function ($a, $b) {
+        usort($this->annealings, static function ($a, $b) {
             return $b[0] <=> $a[0]; });
 
-        echo "{$this->gradients[0][1]} = {$this->gradients[0][0]}, T=\n";
-        echo "{$annealing[0][1]} = {$annealing[0][0]}, T=\n";
+        echo "{$this->gradients[0][1]} = {$this->gradients[0][0]}, T=$endTime\n";
+        echo "{$this->annealings[0][1]} = {$this->annealings[0][0]}, T=$endTime2\n";
     }
 
     /**
@@ -62,6 +66,14 @@ class Annealing
             $max = $p2;
         }
         return [$max, $value + $step];
+    }
+
+    protected function annealings(): void
+    {
+        $this->annealings = [];
+        foreach ($this->values as $value) {
+            $this->annealings[] = $this->annealing($value, 0.0001, 0.8, 200);
+        }
     }
 
     protected function annealing($value, $step, $alpha, $temp, $minTemp = 0.1): array
