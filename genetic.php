@@ -3,6 +3,5 @@
 
 require_once 'vendor/autoload.php';
 
-//$algorithm = new \Algorithms\Annealing;
 $algorithm = new \Algorithms\Genetic;
 $algorithm->run();
