@@ -2,19 +2,20 @@
 
 namespace Algorithms;
 
+use Functions\Func;
+
 class Annealing
 {
-    private $elements = 10;
-    private $values = [];
-    private $function = null;
+    private int $elements = 10;
+    /** @var string[] */
+    private array $values = [];
+    private ?Func $function = null;
     private $gradients = [];
     private $annealings = [];
 
     public function __construct()
     {
-        $this->function = static function($x) {
-            return $x * sin(10 * M_PI * $x) + 1;
-        };
+        $this->function = new Func();
     }
 
     public function run(): void
@@ -24,17 +25,17 @@ class Annealing
         $this->gradients();
         $endTime =  microtime(true) - $startTime;
 
-        $startTime = microtime(true);
-        $this->annealings();
-        $endTime2 = microtime(true) - $startTime;
+//        $startTime = microtime(true);
+//        $this->annealings();
+//        $endTime2 = microtime(true) - $startTime;
 
         usort($this->gradients, static function ($a, $b) {
             return $b[0] <=> $a[0]; });
-        usort($this->annealings, static function ($a, $b) {
-            return $b[0] <=> $a[0]; });
+//        usort($this->annealings, static function ($a, $b) {
+//            return $b[0] <=> $a[0]; });
 
-        echo "{$this->gradients[0][1]} = {$this->gradients[0][0]}, T=$endTime\n";
-        echo "{$this->annealings[0][1]} = {$this->annealings[0][0]}, T=$endTime2\n";
+        echo "{$this->gradients[0][1]} -> {$this->gradients[0][2]} = {$this->gradients[0][0]}, T=$endTime\n";
+//        echo "{$this->annealings[0][1]} = {$this->annealings[0][0]}, T=$endTime2\n";
     }
 
     /**
@@ -43,28 +44,34 @@ class Annealing
     protected function randomizeValues(): void
     {
         for ($i = 0; $i < $this->elements; $i++) {
-            $this->values[] = 3 * $this->random0to1() - 1;
+            $this->values[] = $this->function->randBin();
         }
     }
 
     protected function gradients(): void
     {
         foreach ($this->values as $value) {
-            $this->gradients[] = $this->gradient($value,0.001, 100);
+            $this->gradients[] = $this->gradient($value, 100);
         }
     }
 
-    protected function gradient($value, $step, $maxIter): array
+    protected function gradient($value, $maxIter): array
     {
-        for ($iter = 0, $max = -1000000; $iter < $maxIter; $iter++) {
-            $p1 = ($this->function)($value);
-            $p2 = ($this->function)($value + $step);
-            if ($p1 > $p2) {
+        for ($iter = 0, $min = 1000000; $iter < $maxIter; $iter++) {
+            $p1 = $this->function->fByBin($value);
+            $valueP2 = $this->nextIter($value);
+            $p2 = $this->function->fByBin($valueP2);
+            if ($p1 < $p2) {
                 return [$p1, $value];
             }
-            $max = $p2;
+            $min = $p2;
         }
-        return [$max, $value + $step];
+        return [$min, $valueP2];
+    }
+
+    protected function nextIter(string $currentIter): string
+    {
+        return decbin(bindec($currentIter) + 1);
     }
 
     protected function annealings(): void
