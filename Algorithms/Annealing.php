@@ -65,8 +65,9 @@ class Annealing
                 return [$p1, $value];
             }
             $min = $p2;
+            $value = $this->nextIter($value);
         }
-        return [$min, $valueP2];
+        return [$min, $valueP2, bindec($valueP2)];
     }
 
     protected function nextIter(string $currentIter): string
