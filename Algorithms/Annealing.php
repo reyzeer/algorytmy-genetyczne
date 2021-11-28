@@ -10,8 +10,8 @@ class Annealing
     /** @var string[] */
     private array $values = [];
     private ?Func $function = null;
-    private $gradients = [];
-    private $annealings = [];
+    private array $gradients = [];
+    private array $annealings = [];
 
     public function __construct()
     {
@@ -24,6 +24,8 @@ class Annealing
         $startTime = microtime(true);
         $this->gradients();
         $endTime =  microtime(true) - $startTime;
+
+
 
 //        $startTime = microtime(true);
 //        $this->annealings();

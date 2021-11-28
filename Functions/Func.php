@@ -4,19 +4,28 @@ namespace Functions;
 
 class Func
 {
-    private int $bins = 22;
-    private float $rangeStart = -1;
-    private float $rangeEnd = 2;
+    public int $bins = 22;
+    public float $rangeStart = -1;
+    public float $rangeEnd = 2;
 
     public function f(float $x): float
     {
         return $x * sin(10 * M_PI * $x) + 1;
     }
 
+    public function fDerivative(float $x): float
+    {
+        return sin(10 * M_PI * $x) + 10 * M_PI * $x * cos(10 * M_PI * $x);
+    }
+
     public function fByBin(string $binary): float
     {
-        $x = (bindec($binary) * ($this->rangeEnd - $this->rangeStart)) / (2**$this->bins) + $this->rangeStart;
-        return $this->f($x);
+        return $this->f($this->convertBinaryToX($binary));
+    }
+
+    public function convertBinaryToX(string $binary): float
+    {
+        return ($this->rangeEnd - $this->rangeStart) * (bindec($binary) / (2**$this->bins - 1)) + $this->rangeStart;
     }
 
     public function randBin(): string

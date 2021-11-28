@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-use Algorithms\Annealing;
+use Algorithms\Gradient;
 
 require_once 'vendor/autoload.php';
 
-$algorithm = new Annealing;
+$algorithm = new Gradient();
 $algorithm->run();
