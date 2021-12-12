@@ -4,9 +4,10 @@ namespace Algorithms;
 
 class Gradient extends Algorithm
 {
-    public int $maxIteration = 5;
-    public float $stepRate = 0.1;
+    public int $maxIteration = 100;
+    public float $stepRate = 0.001;
     public float $resultTolerance = 0.01;
+    public bool $checkRange = false;
 
     /** @var float[] */
     private array $steps = [];
@@ -24,6 +25,17 @@ class Gradient extends Algorithm
                 break;
             }
             $this->x -= $diff;
+
+            if ($this->checkRange) {
+                if ($this->x < $this->func->rangeStart) {
+                    $this->x = $this->func->rangeStart;
+                }
+
+                if ($this->x > $this->func->rangeEnd) {
+                    $this->x = $this->func->rangeEnd;
+                }
+            }
+
             $this->steps[] = $this->x;
         }
     }

@@ -4,7 +4,7 @@ namespace Functions;
 
 class Func
 {
-    public int $bins = 22;
+    public int $bits = 22;
     public float $rangeStart = -1;
     public float $rangeEnd = 2;
 
@@ -25,7 +25,7 @@ class Func
 
     public function convertBinaryToX(string $binary): float
     {
-        return ($this->rangeEnd - $this->rangeStart) * (bindec($binary) / (2**$this->bins - 1)) + $this->rangeStart;
+        return ($this->rangeEnd - $this->rangeStart) * (bindec($binary) / (2**$this->bits - 1)) + $this->rangeStart;
     }
 
     public function randX(): float
@@ -36,7 +36,7 @@ class Func
     public function randBin(): string
     {
         $result = "";
-        for ($i = 0; $i < $this->bins; $i++) {
+        for ($i = 0; $i < $this->bits; $i++) {
             $result .= mt_rand() % 2 ? "1" : "0";
         }
         return $result;
