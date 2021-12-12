@@ -18,7 +18,7 @@ class FuncTest extends TestCase
     /**
      * @dataProvider fValuesProvider
      */
-    public function testShouldCountF(float $x, float $value): void
+    public function testCountF(float $x, float $value): void
     {
         self::assertEqualsWithDelta($value, $this->func->f($x), 0.000001);
     }
@@ -39,7 +39,7 @@ class FuncTest extends TestCase
     /**
      * @dataProvider fDerivativeValuesProvider
      */
-    public function testShouldCountFDerivative(float $x, float $value): void
+    public function testCountFDerivative(float $x, float $value): void
     {
         self::assertEqualsWithDelta($value, $this->func->fDerivative($x), 0.000001);
     }
@@ -60,7 +60,7 @@ class FuncTest extends TestCase
     /**
      * @dataProvider binaryValuesProvider
      */
-    public function testShouldConvertBinaryToFloat(string $binary, float $value): void
+    public function testConvertBinaryToFloat(string $binary, float $value): void
     {
         self::assertEqualsWithDelta($value, $this->func->convertBinaryToX($binary), 0.000001);
     }
@@ -77,7 +77,7 @@ class FuncTest extends TestCase
     /**
      * @dataProvider fBinaryValuesProvider
      */
-    public function testShouldGetValueByBin(string $binary, float $value): void
+    public function testGetValueByBin(string $binary, float $value): void
     {
         self::assertEqualsWithDelta($value, $this->func->fByBin($binary), 0.00001);
     }
@@ -89,5 +89,14 @@ class FuncTest extends TestCase
             ["1000000000000000000000", 1],
             ["1111111111111111111111", 1]
         ];
+    }
+
+    public function testRandX(): void
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $x = $this->func->randX();
+            self::assertLessThanOrEqual($this->func->rangeEnd, $x, "Failed for x: $x");
+            self::assertGreaterThanOrEqual($this->func->rangeStart, $x, "Failed for x: $x");
+        }
     }
 }

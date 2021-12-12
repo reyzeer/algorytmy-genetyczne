@@ -7,3 +7,4 @@ require_once 'vendor/autoload.php';
 
 $algorithm = new Gradient();
 $algorithm->run();
+$algorithm->result();

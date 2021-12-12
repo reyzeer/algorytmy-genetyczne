@@ -28,6 +28,11 @@ class Func
         return ($this->rangeEnd - $this->rangeStart) * (bindec($binary) / (2**$this->bins - 1)) + $this->rangeStart;
     }
 
+    public function randX(): float
+    {
+        return $this->convertBinaryToX($this->randBin());
+    }
+
     public function randBin(): string
     {
         $result = "";

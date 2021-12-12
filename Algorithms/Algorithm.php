@@ -13,6 +13,11 @@ abstract class Algorithm
         $this->func = new Func;
     }
 
+    public function getFunc(): Func
+    {
+        return $this->func;
+    }
+
     public function run(): void
     {
         $this->setUp();
@@ -21,7 +26,11 @@ abstract class Algorithm
         $endTime =  microtime(true) - $startTime;
     }
 
-    abstract public function setUp(): void;
+    public function setUp(): void
+    {
+    }
 
     abstract public function algorithm(): void;
+
+    abstract public function result(): void;
 }
