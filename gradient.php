@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
 
-use Algorithms\Gradient;
+use Algorithms\GradientDescent;
 
 require_once 'vendor/autoload.php';
 
-$algorithm = new Gradient();
+$algorithm = new GradientDescent();
 $algorithm->run();
 $algorithm->result();

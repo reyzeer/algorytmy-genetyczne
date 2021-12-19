@@ -4,7 +4,7 @@ namespace Algorithms;
 
 use Functions\Func;
 
-class Annealing
+class Annealing extends Algorithm
 {
     private int $elements = 10;
     /** @var string[] */

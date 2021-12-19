@@ -2,14 +2,14 @@
 
 namespace Tests\Algorithms;
 
-use Algorithms\Gradient;
+use Algorithms\GradientDescent;
 use PHPUnit\Framework\TestCase;
 
-class GradientTest extends TestCase
+class GradientDescentTest extends TestCase
 {
     public function testAlgorithm(): void
     {
-        $gradient = new Gradient();
+        $gradient = new GradientDescent();
         $gradient->algorithm();
         $x = $gradient->getResultX();
         $steps = $gradient->getSteps();
@@ -19,8 +19,8 @@ class GradientTest extends TestCase
         self::assertLessThanOrEqual($gradient->maxIteration + 1, count($steps));
 
         $fX = $gradient->getFunc()->f($x);
-        $fXLeft = $gradient->getFunc()->f($x - 25 * $gradient->stepRate);
-        $fXRight = $gradient->getFunc()->f($x + 25 * $gradient->stepRate);
+        $fXLeft = $gradient->getFunc()->f($x -  $gradient->stepRate);
+        $fXRight = $gradient->getFunc()->f($x + $gradient->stepRate);
 
         self::assertLessThanOrEqual($fXLeft, $fX);
         self::assertLessThanOrEqual($fXRight, $fX);
