@@ -14,7 +14,8 @@
     "autoload": {
         "psr-4": {
             "Algorithms\\": "Algorithms\\",
-            "Functions\\": "Functions\\"
+            "Functions\\": "Functions\\",
+            "Representations\\": "Representations\\"
         }
     },
     "autoload-dev": {

@@ -2,6 +2,8 @@
 
 namespace Functions;
 
+use Representations\BinaryOfFunc;
+
 class Func
 {
     public int $bits = 22;
@@ -18,13 +20,14 @@ class Func
         return sin(10 * M_PI * $x) + 10 * M_PI * $x * cos(10 * M_PI * $x);
     }
 
-    public function fByBin(string $binary): float
+    public function fByBin(BinaryOfFunc $representation): float
     {
-        return $this->f($this->convertBinaryToX($binary));
+        return $this->f($this->convertBinaryToX($representation));
     }
 
-    public function convertBinaryToX(string $binary): float
+    public function convertBinaryToX(BinaryOfFunc $representation): float
     {
+        $binary = $representation->current();
         return ($this->rangeEnd - $this->rangeStart) * (bindec($binary) / (2**$this->bits - 1)) + $this->rangeStart;
     }
 
@@ -33,12 +36,10 @@ class Func
         return $this->convertBinaryToX($this->randBin());
     }
 
-    public function randBin(): string
+    public function randBin(): BinaryOfFunc
     {
-        $result = "";
-        for ($i = 0; $i < $this->bits; $i++) {
-            $result .= mt_rand() % 2 ? "1" : "0";
-        }
-        return $result;
+        $representation = new BinaryOfFunc($this->bits);
+        $representation->generateRand();
+        return $representation;
     }
 }

@@ -2,37 +2,57 @@
 
 namespace Algorithms;
 
+use Representations\BinaryOfFunc;
+
 class GreedyAlgorithm extends Algorithm
 {
     /** @var float[] */
     private array $steps = [];
     private float $x;
-    private string $xBinary;
+    private float $fX;
+    private BinaryOfFunc $xBinary;
+    private BinaryOfFunc $representation;
+    private bool $toLeft;
 
     public function algorithm(): void
     {
-        $currentStep = $this->func->randBin();
-        $currentValue = $this->func->fByBin($currentStep);
-        $this->steps[] = $currentValue;
-        while (true) {
-            $nextStep = $this->nextIter($currentStep);
-            $nextValue = $this->func->fByBin($nextStep);
-            $this->steps[] = $nextValue;
+        $this->representation = $this->func->randBin();
+        $this->checkDirection($representation);
 
-            if ($nextValue > $currentValue) {
-                $this->x = $nextValue;
-                $this->xBinary = $nextStep;
-                break;
+        $currentFX = $this->func->fByBin($representation);
+        $this->steps[] = $currentFX;
+        while (true) {
+            if ($this->toLeft) {
+                $representation->prev();
+            } else {
+                $representation->next();
             }
 
-            $currentStep = $nextStep;
-            $currentValue = $nextValue;
+            $this->steps[] = $representation->current();
+            $nextFX = $this->func->fByBin($representation);
+            if ($currentFX < $nextFX) {
+                // trzeba dodać wybieranie kierunku w lewo < w prawo >
+                $representation->prev();
+                $this->x = $this->func->convertBinaryToX($representation);
+                $this->fX = $currentFX;
+                $this->xBinary = $representation;
+                break;
+            }
+            $currentFX = $nextFX;
         }
     }
 
-    public function nextIter(string $currentIter): string
+    private function checkDirection(BinaryOfFunc $representation): void
     {
-        return decbin(bindec($currentIter) + 1);
+        $current = $representation->current();
+        $representation->next();
+        $toLeft = $current > $representation->current();
+        $representation->rewind();
+    }
+
+    private function step(): void
+    {
+
     }
 
     public function result(): void
@@ -42,8 +62,7 @@ class GreedyAlgorithm extends Algorithm
             echo "Step $i. $step\n";
             $i++;
         }
-        $f = $this->func->f($this->x);
-        echo "Result: f($this->x) = $f\n";
+        echo "Result: f($this->x) = $this->fX\n";
     }
 
     public function getResultX(): float
@@ -51,13 +70,13 @@ class GreedyAlgorithm extends Algorithm
         return $this->x;
     }
 
-    public function getResultXBinary(): string
+    public function getResultFX(): float
     {
-        return $this->xBinary;
+        return $this->fX;
     }
 
-    public function getSteps(): array
+    public function getResultXBinary(): BinaryOfFunc
     {
-        return $this->steps;
+        return $this->xBinary;
     }
 }

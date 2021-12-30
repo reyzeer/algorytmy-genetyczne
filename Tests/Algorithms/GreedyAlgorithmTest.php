@@ -16,10 +16,16 @@ class GreedyAlgorithmTest extends TestCase
         self::assertGreaterThanOrEqual($greedyAlgorithm->getFunc()->rangeStart, $x);
         self::assertLessThanOrEqual($greedyAlgorithm->getFunc()->rangeEnd, $x);
 
+        $fX = $greedyAlgorithm->getResultFX();
+
         $xBinary = $greedyAlgorithm->getResultXBinary();
-        $fX = $greedyAlgorithm->getFunc()->fByBin($xBinary);
-        $fXLeft = $greedyAlgorithm->getFunc()->f(decbin(bindec($xBinary) - 1));
-        $fXRight = $greedyAlgorithm->getFunc()->f($greedyAlgorithm->nextIter($xBinary));
+
+        $xBinary->prev();
+        $fXLeft = $greedyAlgorithm->getFunc()->fByBin($xBinary);
+
+        $xBinary->next();
+        $xBinary->next();
+        $fXRight = $greedyAlgorithm->getFunc()->fByBin($xBinary);
 
         self::assertLessThanOrEqual($fXLeft, $fX);
         self::assertLessThanOrEqual($fXRight, $fX);
