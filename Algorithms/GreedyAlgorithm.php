@@ -17,42 +17,58 @@ class GreedyAlgorithm extends Algorithm
     public function algorithm(): void
     {
         $this->representation = $this->func->randBin();
-        $this->checkDirection($representation);
+        $this->checkDirection();
 
-        $currentFX = $this->func->fByBin($representation);
+        $currentFX = $this->func->fByBin($this->representation);
         $this->steps[] = $currentFX;
         while (true) {
-            if ($this->toLeft) {
-                $representation->prev();
-            } else {
-                $representation->next();
-            }
-
-            $this->steps[] = $representation->current();
-            $nextFX = $this->func->fByBin($representation);
-            if ($currentFX < $nextFX) {
-                // trzeba dodać wybieranie kierunku w lewo < w prawo >
-                $representation->prev();
-                $this->x = $this->func->convertBinaryToX($representation);
+            $this->step();
+            $this->steps[] = $this->representation->current();
+            $nextFX = $this->func->fByBin($this->representation);
+            if ($this->checkIsDone($currentFX, $nextFX)) {
+                $this->backStep();
+                $this->x = $this->func->convertBinaryToX($this->representation);
                 $this->fX = $currentFX;
-                $this->xBinary = $representation;
+                $this->xBinary = $this->representation;
                 break;
             }
             $currentFX = $nextFX;
         }
     }
 
-    private function checkDirection(BinaryOfFunc $representation): void
+    private function checkDirection(): void
     {
-        $current = $representation->current();
-        $representation->next();
-        $toLeft = $current > $representation->current();
-        $representation->rewind();
+        $current = $this->representation->current();
+        $this->representation->next();
+        $this->toLeft = $current > $this->representation->current();
+        $this->representation->rewind();
     }
 
     private function step(): void
     {
+        if ($this->toLeft) {
+            $this->representation->prev();
+        } else {
+            $this->representation->next();
+        }
+    }
 
+    private function backStep(): void
+    {
+        if (!$this->toLeft) {
+            $this->representation->prev();
+        } else {
+            $this->representation->next();
+        }
+    }
+
+    private function checkIsDone(float $currentFX, float $nextFX): bool
+    {
+        if ($this->toLeft) {
+            return $currentFX > $nextFX;
+        } else {
+            return $currentFX < $nextFX;
+        }
     }
 
     public function result(): void

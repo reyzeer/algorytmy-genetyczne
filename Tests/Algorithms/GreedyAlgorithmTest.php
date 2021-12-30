@@ -30,4 +30,14 @@ class GreedyAlgorithmTest extends TestCase
         self::assertLessThanOrEqual($fXLeft, $fX);
         self::assertLessThanOrEqual($fXRight, $fX);
     }
+
+    /**
+     * @skip Use this test, after made changes in GreedyAlgorithm
+     */
+    public function testSomeRunning(): void
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $this->testAlgorithm();
+        }
+    }
 }
