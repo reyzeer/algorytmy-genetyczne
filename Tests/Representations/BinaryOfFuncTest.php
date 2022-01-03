@@ -28,18 +28,74 @@ class BinaryOfFuncTest extends TestCase
         self::assertEquals($bits, $representation->current());
     }
 
-    public function testNext(): void
+    /**
+     * @dataProvider nextProvider
+     */
+    public function testNext(?int $step, string $before, string $after): void
     {
-        $representation = new BinaryOfFunc(new Func(), "1010101010101010101010");
-        $representation->next();
-        self::assertEquals("1010101010101010101011", $representation->current());
+        $representation = new BinaryOfFunc(new Func(), $before);
+        if ($step) {
+            $representation->next($step);
+        } else {
+            $representation->next();
+        }
+        self::assertEquals($after, $representation->current());
     }
 
-    public function testPrev(): void
+    public function nextProvider(): array
     {
-        $representation = new BinaryOfFunc(new Func(), "1010101010101010101010");
-        $representation->prev();
-        self::assertEquals("1010101010101010101001", $representation->current());
+        return [
+            'standard +1' => [
+                'step' => null,
+                'before' => '1010101010101010101010',
+                'after' => '1010101010101010101011'
+            ],
+            '+2' => [
+                'step' => 2,
+                'before' => '1010101010101010101010',
+                'after' => '1010101010101010101100'
+            ],
+            'out of range' => [
+                'step' => 10,
+                'before' => '1111111111111111111111',
+                'after' => '10000000000000000001001',
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider prevProvider
+     */
+    public function testPrev(?int $step, string $before, string $after): void
+    {
+        $representation = new BinaryOfFunc(new Func(), $before);
+        if ($step) {
+            $representation->prev($step);
+        } else {
+            $representation->prev();
+        }
+        self::assertEquals($after, $representation->current());
+    }
+
+    public function prevProvider(): array
+    {
+        return [
+            'standard -1' => [
+                'step' => null,
+                'before' => '1010101010101010101010',
+                'after' => '1010101010101010101001'
+            ],
+            '-2' => [
+                'step' => 2,
+                'before' => '1010101010101010101010',
+                'after' => '1010101010101010101000'
+            ],
+            'out of range' => [
+                'step' => 10,
+                'before' => '0000000000000000000000',
+                'after' => '1111111111111111111111111111111111111111111111111111111111110110',
+            ]
+        ];
     }
 
     public function testKey(): void
@@ -108,24 +164,40 @@ class BinaryOfFuncTest extends TestCase
     /**
      * @dataProvider stepToMinimumProvider
      */
-    public function testStepToMinima(string $beforeStep, string $afterStep): void
+    public function testStepToMinima(?int $step, string $beforeStep, string $afterStep): void
     {
         $representation = new BinaryOfFunc(new Func(), $beforeStep);
         $representation->checkDirection();
-        $representation->stepToMinima();
+        if ($step) {
+            $representation->stepToMinima($step);
+        } else {
+            $representation->stepToMinima();
+        }
         self::assertEquals($afterStep, $representation->current());
     }
 
     public function stepToMinimumProvider(): array
     {
         return [
-            'minima on left' => [
+            'minima on left - standard step +1' => [
+                'step' => null,
                 'beforeStep' => '1010101010101010101010',
                 'afterStep'  => '1010101010101010101001',
             ],
-            'minima on right' => [
+            'minima on left - step +2' => [
+                'step' => 2,
+                'beforeStep' => '1010101010101010101010',
+                'afterStep'  => '1010101010101010101000',
+            ],
+            'minima on right - standard step +1' => [
+                'step' => null,
                 'beforeStep' => '0001111010101010101010',
                 'afterStep'  => '0001111010101010101011',
+            ],
+            'minima on right - step +2' => [
+                'step' => 2,
+                'beforeStep' => '0001111010101010101010',
+                'afterStep'  => '0001111010101010101100',
             ]
         ];
     }
@@ -133,22 +205,37 @@ class BinaryOfFuncTest extends TestCase
     /**
      * @dataProvider backStepToMinimaProvider
      */
-    public function testBackStepToMinimumOnLeft(string $binary): void
+    public function testBackStepToMinimumOnLeft(?int $step, string $binary): void
     {
         $representation = new BinaryOfFunc(new Func(), $binary);
         $representation->checkDirection();
-        $representation->stepToMinima();
-        $representation->backStepToMinima();
+        if ($step) {
+            $representation->stepToMinima($step);
+            $representation->backStepToMinima($step);
+        } else {
+            $representation->stepToMinima();
+            $representation->backStepToMinima();
+        }
         self::assertEquals($binary, $representation->current());
     }
 
     public function backStepToMinimaProvider(): array
     {
         return [
-            'minima on left' => [
+            'minima on left - standard step + 1' => [
+                'step' => null,
                 'binary' => '0001111010101010101010'
             ],
-            'minima on right' => [
+            'minima on left - step + 2' => [
+                'step' => 2,
+                'binary' => '0001111010101010101010'
+            ],
+            'minima on right - standard step +1' => [
+                'step' => null,
+                'binary' => '1010101010101010101010'
+            ],
+            'minima on right - step +2' => [
+                'step' => 2,
                 'binary' => '1010101010101010101010'
             ]
         ];

@@ -32,23 +32,23 @@ class BinaryOfFunc implements Iterator
         return $this->representation;
     }
 
-    public function next(): void
+    public function next(int $step = 1): void
     {
-        $this->representation =  decbin(bindec($this->representation) + 1);
+        $this->representation =  decbin(bindec($this->representation) + $step);
         $this->prependZeros();
     }
 
-    public function prev(): void
+    public function prev(int $step = 1): void
     {
-        $this->representation =  decbin(bindec($this->representation) - 1);
+        $this->representation =  decbin(bindec($this->representation) - $step);
         $this->prependZeros();
     }
 
     private function prependZeros(): void
     {
-        $this->representation =
-            str_repeat('0', $this->func->bits - strlen($this->representation)) .
-            $this->representation;
+        $zeroesToAdd = $this->func->bits - strlen($this->representation);
+        $zeroesToAdd = ($zeroesToAdd < 0) ? 0 : $zeroesToAdd;
+        $this->representation = str_repeat('0', $zeroesToAdd) . $this->representation;
     }
 
     public function key(): int
@@ -85,21 +85,27 @@ class BinaryOfFunc implements Iterator
         return $this->toLeft;
     }
 
-    public function stepToMinima(): void
+    public function stepToMinima(int $step = 1): void
     {
         if ($this->toLeft) {
-            $this->prev();
+            $this->prev($step);
         } else {
-            $this->next();
+            $this->next($step);
+        }
+        if (!$this->valid()) {
+            $this->rewind();
         }
     }
 
-    public function backStepToMinima(): void
+    public function backStepToMinima(int $step = 1): void
     {
         if (!$this->toLeft) {
-            $this->prev();
+            $this->prev($step);
         } else {
-            $this->next();
+            $this->next($step);
+        }
+        if (!$this->valid()) {
+            $this->rewind();
         }
     }
 }
