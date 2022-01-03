@@ -41,19 +41,11 @@ class Annealing extends Algorithm
         $min = PHP_FLOAT_MAX;
         $minRepresentation = "";
 
-        /**
-         * Trzeba tutaj wprowadzić jakieś skok
-         * 1. po pierwszej algorytm może biegać w okolicach minima lokalnego po
-         *  kolejnych sąsiada bit po bicie,
-         * 2. ale powinien też być zdolny do przeskoku do dalszej cześci dziedziny funkcji
-         *  tak, aby nie zatrzymywać się w minimach lokalnych
-         */
-
         while ($this->temp > $this->tempMin) {
             for ($i = 0; $i < $this->iterations; $i++) {
 
                 $currentValue = $this->func->fByRepresentation($this->representation);
-                $this->steps[] = $currentValue;
+                $this->saveStep();
                 if ($currentValue < $min) {
                     $min = $currentValue;
                     $minRepresentation = $this->representation->current();
@@ -62,7 +54,7 @@ class Annealing extends Algorithm
                 // Get neighbour
                 $this->representation->stepToMinima();
                 $nextValue = $this->func->fByRepresentation($this->representation);
-                $this->steps[] = $nextValue;
+                $this->saveStep();
 
                 $annealingPoint = exp(($nextValue - $currentValue) / $this->temp);
                 if (!$annealingPoint > $this->rand0to1()) {
@@ -77,6 +69,15 @@ class Annealing extends Algorithm
 
     }
 
+    private function saveStep(): void
+    {
+        $this->steps[] = [
+            'x' => $this->func->convertRepresentationToX($this->representation),
+            'fX' => $this->func->fByRepresentation($this->representation),
+            'binary' => $this->representation->current(),
+        ];
+    }
+
     protected function rand0to1(): float
     {
         return mt_rand() / mt_getrandmax();
@@ -86,7 +87,7 @@ class Annealing extends Algorithm
     {
         $i = 0;
         foreach ($this->steps as $step) {
-            echo "Step $i. $step\n";
+            echo 'Step ' . $i . '. f(' . $step['binary'] . ':' . $step['x'] . ') = ' . $step['fX'] . "\n";
             $i++;
         }
         $x = $this->func->convertRepresentationToX($this->representation);
