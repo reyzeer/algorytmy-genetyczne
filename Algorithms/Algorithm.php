@@ -10,7 +10,7 @@ abstract class Algorithm
 
     public function __construct()
     {
-        $this->func = new Func;
+        $this->func = new Func();
     }
 
     public function getFunc(): Func

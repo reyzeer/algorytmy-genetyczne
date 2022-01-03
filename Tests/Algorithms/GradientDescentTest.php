@@ -3,9 +3,8 @@
 namespace Tests\Algorithms;
 
 use Algorithms\GradientDescent;
-use PHPUnit\Framework\TestCase;
 
-class GradientDescentTest extends TestCase
+class GradientDescentTest extends AbstractAlgorithmTestCase
 {
     public function testAlgorithm(): void
     {
@@ -18,11 +17,11 @@ class GradientDescentTest extends TestCase
         self::assertLessThanOrEqual($gradient->getFunc()->rangeEnd, $x);
         self::assertLessThanOrEqual($gradient->maxIteration + 1, count($steps));
 
-        $fX = $gradient->getFunc()->f($x);
-        $fXLeft = $gradient->getFunc()->f($x -  $gradient->stepRate);
-        $fXRight = $gradient->getFunc()->f($x + $gradient->stepRate);
-
-        self::assertLessThanOrEqual($fXLeft, $fX);
-        self::assertLessThanOrEqual($fXRight, $fX);
+        // Going to minima
+        $currentStep = $steps[0];
+        foreach ($steps as $step) {
+            self::assertTrue($currentStep >= $step['fX']);
+            $currentStep = $step;
+        }
     }
 }

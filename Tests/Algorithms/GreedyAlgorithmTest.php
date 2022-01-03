@@ -3,9 +3,8 @@
 namespace Tests\Algorithms;
 
 use Algorithms\GreedyAlgorithm;
-use PHPUnit\Framework\TestCase;
 
-class GreedyAlgorithmTest extends TestCase
+class GreedyAlgorithmTest extends AbstractAlgorithmTestCase
 {
     public function testAlgorithm(): void
     {
@@ -21,23 +20,13 @@ class GreedyAlgorithmTest extends TestCase
         $xBinary = $greedyAlgorithm->getResultXBinary();
 
         $xBinary->prev();
-        $fXLeft = $greedyAlgorithm->getFunc()->fByBin($xBinary);
+        $fXLeft = $greedyAlgorithm->getFunc()->fByRepresentation($xBinary);
 
         $xBinary->next();
         $xBinary->next();
-        $fXRight = $greedyAlgorithm->getFunc()->fByBin($xBinary);
+        $fXRight = $greedyAlgorithm->getFunc()->fByRepresentation($xBinary);
 
         self::assertLessThanOrEqual($fXLeft, $fX);
         self::assertLessThanOrEqual($fXRight, $fX);
-    }
-
-    /**
-     * @skip Use this test, after made changes in GreedyAlgorithm
-     */
-    public function testSomeRunning(): void
-    {
-        for ($i = 0; $i < 100; $i++) {
-            $this->testAlgorithm();
-        }
     }
 }

@@ -63,8 +63,8 @@ class FuncTest extends TestCase
      */
     public function testConvertBinaryToFloat(string $binary, float $value): void
     {
-        $representation = new BinaryOfFunc($this->func->bits, $binary);
-        self::assertEqualsWithDelta($value, $this->func->convertBinaryToX($representation), 0.000001);
+        $representation = new BinaryOfFunc($this->func, $binary);
+        self::assertEqualsWithDelta($value, $this->func->convertRepresentationToX($representation), 0.000001);
     }
 
     public function binaryValuesProvider(): array
@@ -81,8 +81,8 @@ class FuncTest extends TestCase
      */
     public function testGetValueByBin(string $binary, float $value): void
     {
-        $representation = new BinaryOfFunc($this->func->bits, $binary);
-        self::assertEqualsWithDelta($value, $this->func->fByBin($representation), 0.00001);
+        $representation = new BinaryOfFunc($this->func, $binary);
+        self::assertEqualsWithDelta($value, $this->func->fByRepresentation($representation), 0.00001);
     }
 
     public function fBinaryValuesProvider(): array

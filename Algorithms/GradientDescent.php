@@ -9,14 +9,13 @@ class GradientDescent extends Algorithm
     public float $resultTolerance = 0.0001;
     public bool $checkRange = false;
 
-    /** @var float[] */
     private array $steps = [];
     private float $x;
 
     public function algorithm(): void
     {
         $start = $this->func->randX();
-        $this->steps = [$start];
+        $this->saveStep($start);
         $this->x = $start;
 
         for ($i = 0 ; $i < $this->maxIteration; $i++) {
@@ -28,8 +27,16 @@ class GradientDescent extends Algorithm
 
             $this->controlOutOfRange();
 
-            $this->steps[] = $this->x;
+            $this->saveStep($this->x);
         }
+    }
+
+    private function saveStep(float $x): void
+    {
+        $this->steps[] = [
+            'x' => $x,
+            'fX' => $this->func->f($x)
+        ];
     }
 
     private function controlOutOfRange(): void
@@ -49,7 +56,7 @@ class GradientDescent extends Algorithm
     {
         $i = 0;
         foreach ($this->steps as $step) {
-            echo "Step $i. $step\n";
+            echo 'Step ' . $i . '. f(' . $step['x'] . ') = ' . $step['fX'] . "\n";
             $i++;
         }
         $f = $this->func->f($this->x);

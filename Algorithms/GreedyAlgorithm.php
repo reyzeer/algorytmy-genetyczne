@@ -6,28 +6,27 @@ use Representations\BinaryOfFunc;
 
 class GreedyAlgorithm extends Algorithm
 {
-    /** @var float[] */
     private array $steps = [];
+
     private float $x;
     private float $fX;
     private BinaryOfFunc $xBinary;
     private BinaryOfFunc $representation;
-    private bool $toLeft;
 
     public function algorithm(): void
     {
         $this->representation = $this->func->randBin();
-        $this->checkDirection();
+        $this->representation->checkDirection();
 
-        $currentFX = $this->func->fByBin($this->representation);
-        $this->steps[] = $currentFX;
+        $currentFX = $this->func->fByRepresentation($this->representation);
+        $this->saveStep();
         while (true) {
-            $this->step();
-            $this->steps[] = $this->representation->current();
-            $nextFX = $this->func->fByBin($this->representation);
-            if ($this->checkIsDone($currentFX, $nextFX)) {
-                $this->backStep();
-                $this->x = $this->func->convertBinaryToX($this->representation);
+            $this->representation->stepToMinima();
+            $this->saveStep();
+            $nextFX = $this->func->fByRepresentation($this->representation);
+            if ($nextFX > $currentFX) {
+                $this->representation->backStepToMinima();
+                $this->x = $this->func->convertRepresentationToX($this->representation);
                 $this->fX = $currentFX;
                 $this->xBinary = $this->representation;
                 break;
@@ -36,46 +35,20 @@ class GreedyAlgorithm extends Algorithm
         }
     }
 
-    private function checkDirection(): void
+    private function saveStep(): void
     {
-        $current = $this->representation->current();
-        $this->representation->next();
-        $this->toLeft = $current > $this->representation->current();
-        $this->representation->rewind();
-    }
-
-    private function step(): void
-    {
-        if ($this->toLeft) {
-            $this->representation->prev();
-        } else {
-            $this->representation->next();
-        }
-    }
-
-    private function backStep(): void
-    {
-        if (!$this->toLeft) {
-            $this->representation->prev();
-        } else {
-            $this->representation->next();
-        }
-    }
-
-    private function checkIsDone(float $currentFX, float $nextFX): bool
-    {
-        if ($this->toLeft) {
-            return $currentFX > $nextFX;
-        } else {
-            return $currentFX < $nextFX;
-        }
+        $this->steps[] = [
+            'x' => $this->func->convertRepresentationToX($this->representation),
+            'fX' => $this->func->fByRepresentation($this->representation),
+            'binary' => $this->representation->current(),
+        ];
     }
 
     public function result(): void
     {
         $i = 0;
         foreach ($this->steps as $step) {
-            echo "Step $i. $step\n";
+            echo 'Step ' . $i . '. f(' . $step['binary'] . ':' . $step['x'] . ') = ' . $step['fX'] . "\n";
             $i++;
         }
         echo "Result: f($this->x) = $this->fX\n";

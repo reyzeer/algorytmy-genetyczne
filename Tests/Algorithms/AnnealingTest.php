@@ -13,3 +13,4 @@ class AnnealingTest extends TestCase
     }
 
 }
+
