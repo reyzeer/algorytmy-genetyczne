@@ -2,28 +2,23 @@
 
 namespace Algorithms;
 
-use Functions\Func;
 use Representations\BinaryOfFunc;
 
 class Annealing extends Algorithm
 {
-    private int $elements = 10;
-    /** @var string[] */
-    private array $values = [];
-    private array $representations = [];
-    private ?Func $function = null;
-    private array $gradients = [];
-    private array $annealings = [];
-
-    private float $iterations = 1000;
+    private float $iterations = 10000;
     private int $step;
     private float $alpha = 0.8;
-    private float $temp = 200;
-    private float $tempMin = 0.1;
+    private float $temp = 10;
+    private float $tempMin = 1;
 
-    private array $steps = [];
     private BinaryOfFunc $representation;
-    protected bool $toLeft;
+    private array $steps = [];
+    private float $minX;
+    private float $min;
+    private string $minRepresentation;
+    private int $jumps = 0;
+    private int $cold = 0;
 
     public function __construct()
     {
@@ -36,37 +31,43 @@ class Annealing extends Algorithm
         $this->representation = $this->func->randBin();
         $this->representation->checkDirection();
 
-        $maxTemp = -1000000;
-
-        $min = PHP_FLOAT_MAX;
-        $minRepresentation = "";
+        $this->min = PHP_FLOAT_MAX;
+        $this->minRepresentation = "";
 
         while ($this->temp > $this->tempMin) {
             for ($i = 0; $i < $this->iterations; $i++) {
 
                 $currentValue = $this->func->fByRepresentation($this->representation);
                 $this->saveStep();
-                if ($currentValue < $min) {
-                    $min = $currentValue;
-                    $minRepresentation = $this->representation->current();
-                }
+                $this->saveMin($currentValue);
 
-                // Get neighbour
-                $this->representation->stepToMinima();
+                $this->representation->stepToMinima($this->step);
                 $nextValue = $this->func->fByRepresentation($this->representation);
                 $this->saveStep();
+                $this->saveMin($nextValue);
 
                 $annealingPoint = exp(($nextValue - $currentValue) / $this->temp);
-                if (!$annealingPoint > $this->rand0to1()) {
-                    $this->representation->stepToMinima($this->step);
+                if ($annealingPoint < $this->rand0to1()) {
+                    $this->representation->backStepToMinima($this->step);
+                    $this->representation->stepToMinima();
+                    $this->cold++;
+                } else  {
+                    $this->jumps++;
                 }
-
-
             }
 
             $this->temp *= $this->alpha;
         }
 
+    }
+
+    private function saveMin(float $currentValue): void
+    {
+        if ($currentValue < $this->min) {
+            $this->minX = $this->func->convertRepresentationToX($this->representation);
+            $this->min = $currentValue;
+            $this->minRepresentation = $this->representation->current();
+        }
     }
 
     private function saveStep(): void
@@ -90,33 +91,33 @@ class Annealing extends Algorithm
             echo 'Step ' . $i . '. f(' . $step['binary'] . ':' . $step['x'] . ') = ' . $step['fX'] . "\n";
             $i++;
         }
-        $x = $this->func->convertRepresentationToX($this->representation);
-        $result = $this->func->fByRepresentation($this->representation);
-        echo "Result: f($x) = $result\n";
+        echo "Result: f($this->minX) = $this->min\n";
+        echo "Jumps: $this->jumps\n";
+        echo "Colds: $this->cold\n";
     }
 
-    protected function annealing(BinaryOfFunc $value, float $step, float $alpha, float $temp, float $minTemp = 0.1): array
+    public function getResultX(): float
     {
-        $max = -1000000;
-        while ($temp > $minTemp) {
-            $p1 = $this->getFunc()->fByRepresentation($value);
-            $p2 = ($this->function)($value + $step);
-            if ($p1 > $p2) {
-                return [$p1, $value];
-            } else {
-                $prob = $this->rand0to1();
-                if ($prob < exp($p1 - $p2 / $temp)) {
-                    $value += $step;
-                    $max = $p2;
-                    if ($value > 2) {
-                        return [$max, $value];
-                    }
-                }
-            }
+        return $this->minX;
+    }
 
-            $max = $p2;
-            $temp *= $alpha;
-        }
-        return [$max, $value + $step];
+    public function getResultFX(): float
+    {
+        return $this->min;
+    }
+
+    public function getMinRepresentation(): BinaryOfFunc
+    {
+        return new BinaryOfFunc($this->func, $this->minRepresentation);
+    }
+
+    public function getSteps(): array
+    {
+        return $this->steps;
+    }
+
+    public function getJumps(): int
+    {
+        return $this->jumps;
     }
 }

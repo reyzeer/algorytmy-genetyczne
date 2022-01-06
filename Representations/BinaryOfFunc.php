@@ -4,6 +4,7 @@ namespace Representations;
 
 use Functions\Func;
 use Iterator;
+use TypeError;
 
 class BinaryOfFunc implements Iterator
 {
@@ -58,8 +59,12 @@ class BinaryOfFunc implements Iterator
 
     public function valid(): bool
     {
-        $key = $this->key();
-        return $key >= 0 && $key < 2**$this->func->bits;
+        try {
+            $key = $this->key();
+            return $key >= 0 && $key < 2 ** $this->func->bits;
+        } catch (TypeError $exception) {
+            return false;
+        }
     }
 
     public function rewind()
