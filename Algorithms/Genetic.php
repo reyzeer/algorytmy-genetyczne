@@ -3,8 +3,9 @@
 namespace Algorithms;
 
 use Exception;
+use Representations\BinaryOfFunc;
 
-class Genetic
+class Genetic extends Algorithm
 {
     private $function = null;
     private $startRange = -1;
@@ -16,16 +17,74 @@ class Genetic
     /** @var string[] */
     private $subjects = [];
     private $subjectValues = [];
-    private $amountInNextGeneration = [];
+
 
     private $steps = 100000;
 
-    public function __construct()
+    private int $populationSize = 10;
+    private int $iterations = 100000;
+    /** @var BinaryOfFunc[] */
+    private array $population = [];
+    /** @var float[] */
+    private array $memberFX = [];
+    private float $sumOfMembersFX;
+    /** @var float[] */
+    private $memberGenerationAmount = [];
+
+
+    public function algorithm(): void
     {
-        $this->function = static function($x) {
-            return $x * sin(10 * M_PI * $x) + 1;
-        };
+        $this->randomizeStart();
+        for ($i = 0; $i < $this->iterations; $i++) {
+            $this->calcMembersFX();
+            $this->calcSumOfMembersFX();
+            $this->calcGenerationMemberAmount();
+        }
     }
+
+    /**
+     * @throws Exception
+     */
+    protected function randomizeStart(): void
+    {
+        for ($i = 0; $i < $this->populationSize; $i++) {
+            $this->population[] = $this->func->randBin();
+        }
+    }
+
+    protected function calcMembersFX(): void
+    {
+        foreach ($this->population as $key => $member) {
+            $this->memberFX[$key] = $this->func->fByRepresentation($member);
+        }
+    }
+
+    protected function calcSumOfMembersFX(): void
+    {
+        $this->sumOfMembersFX = array_sum($this->memberFX);
+    }
+
+    protected function calcGenerationMemberAmount(): void
+    {
+        foreach ($this->population as $key => $member) {
+            $memberFX = $this->func->fByRepresentation($member);
+            $this->memberGenerationAmount[$key] = round($this->populationSize * $memberFX / $this->sumOfMembersFX);
+            // tutaj czym wartośc mniejsza tym lepiej, trzeba przekazywać te osobniki dalej
+        }
+    }
+
+    protected function prepareNextGeneration(): void
+    {
+        $childs = [];
+        foreach ($this->memberGenerationAmount as $key => $amount) {
+            // wygenerowanie serii dzieci do połączenia w pary / kandydatów
+        }
+        // przekazanie dzieci do kolejnego pokolenia
+        // łączenie do realizacji na klasie reprezentacji
+    }
+
+    // wykonanie mutacji
+    // mutowanie do wykonania na klasie reprezentacji
 
     /**
      * @throws Exception
@@ -34,7 +93,7 @@ class Genetic
     {
         $this->randomizeStart();
         for ($i = 0; $i < $this->steps; $i++) {
-            $this->calcValues();
+            $this->calcMembersFX();
             $this->calcAmountInNextGeneration();
             $this->prepareNextGeneration();
             $this->mutation();
@@ -46,27 +105,6 @@ class Genetic
     {
         return ($this->function)(abs
             ($this->startRange - $this->endRange) * bindec($binary)/(2**$this->bits - 1) - 1);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function randomizeStart(): void
-    {
-        for ($i = 0; $i < $this->numberOfSubjects; $i++) {
-            $subject = '';
-            for ($j = 0 ; $j < $this->bits; $j++) {
-                $subject .= random_int(0, 1) === 0 ? '0' : '1';
-            }
-            $this->subjects[] = $subject;
-        }
-    }
-
-    protected function calcValues(): void
-    {
-        foreach ($this->subjects as $key => $subject) {
-            $this->subjectValues[$key] = bindec($subject);
-        }
     }
 
     protected function calcAmountInNextGeneration(): void
@@ -110,7 +148,7 @@ class Genetic
 
     protected function printResults(): void
     {
-        $this->calcValues();
+        $this->calcMembersFX();
         foreach ($this->subjectValues as $key => $value) {
             echo "$key : {$this->subjects[$key]} => $value\n";
         }
