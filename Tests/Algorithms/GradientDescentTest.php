@@ -10,7 +10,7 @@ class GradientDescentTest extends AbstractAlgorithmTestCase
     {
         $gradient = new GradientDescent();
         $gradient->algorithm();
-        $x = $gradient->getResultX();
+        $x = $gradient->getResult()->x;
         $steps = $gradient->getSteps();
 
         self::assertGreaterThanOrEqual($gradient->getFunc()->rangeStart, $x);
@@ -18,10 +18,10 @@ class GradientDescentTest extends AbstractAlgorithmTestCase
         self::assertLessThanOrEqual($gradient->maxIteration + 1, count($steps));
 
         // Going to minima
-        $currentStep = $steps[0];
+        $currentMinima = $steps[0];
         foreach ($steps as $step) {
-            self::assertTrue($currentStep >= $step['fX']);
-            $currentStep = $step;
+            self::assertTrue($currentMinima->fX >= $step->fX);
+            $currentMinima = $step;
         }
     }
 }

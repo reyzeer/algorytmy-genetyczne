@@ -3,43 +3,43 @@
 namespace Tests\Algorithms;
 
 use Algorithms\Annealing;
+use Models\Step;
 
 class AnnealingTest extends AbstractAlgorithmTestCase
 {
     public function testAlgorithm(): void
     {
         $annealing = new Annealing();
+        $annealing->setUp();
         $annealing->algorithm();
-        $x = $annealing->getResultX();
-        $fX = $annealing->getResultFX();
+        $result = $annealing->getResult();
 
-        self::assertGreaterThanOrEqual($annealing->getFunc()->rangeStart, $x);
-        self::assertLessThanOrEqual($annealing->getFunc()->rangeEnd, $x);
+        self::assertGreaterThanOrEqual($annealing->getFunc()->rangeStart, $result->x);
+        self::assertLessThanOrEqual($annealing->getFunc()->rangeEnd, $result->x);
 
         self::assertGreaterThan(0, $annealing->getJumps());
 
         $steps = $annealing->getSteps();
-        $minX = PHP_FLOAT_MAX;
-        $minFX = PHP_FLOAT_MAX;
+        $minStep = new Step(PHP_FLOAT_MAX, PHP_FLOAT_MAX);
         foreach ($steps as $step) {
-            if ($minFX > $step['fX']) {
-                $minX = $step['x'];
-                $minFX = $step['fX'];
+            if ($minStep->fX > $step->fX) {
+                $minStep = $step;
             }
         }
-        self::assertEquals($minX, $x);
-        self::assertEquals($minFX, $fX);
+        self::assertEquals($minStep->x, $result->x);
+        self::assertEquals($minStep->fX, $result->fX);
 
-        $xBinary = $annealing->getMinRepresentation();
+        $algorithmStep = "1000000000";
+        $xBinary = $result->representation;
 
-        $xBinary->prev(bindec("1000000000"));
+        $xBinary->prev(bindec($algorithmStep));
         $fXLeft = $annealing->getFunc()->fByRepresentation($xBinary);
 
-        $xBinary->next(2*bindec("1000000000"));
+        $xBinary->next(2*bindec($algorithmStep));
         $fXRight = $annealing->getFunc()->fByRepresentation($xBinary);
 
-        self::assertLessThanOrEqual($fXLeft, $fX);
-        self::assertLessThanOrEqual($fXRight, $fX);
+        self::assertLessThanOrEqual($fXLeft, $result->fX);
+        self::assertLessThanOrEqual($fXRight, $result->fX);
     }
 }
 

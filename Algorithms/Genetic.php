@@ -5,7 +5,7 @@ namespace Algorithms;
 use Exception;
 use Representations\BinaryOfFunc;
 
-class Genetic extends Algorithm
+class Genetic extends AbstractAlgorithm
 {
     private $function = null;
     private $startRange = -1;
@@ -42,9 +42,6 @@ class Genetic extends Algorithm
         }
     }
 
-    /**
-     * @throws Exception
-     */
     protected function randomizeStart(): void
     {
         for ($i = 0; $i < $this->populationSize; $i++) {
@@ -86,6 +83,11 @@ class Genetic extends Algorithm
     // wykonanie mutacji
     // mutowanie do wykonania na klasie reprezentacji
 
+    public function result(): void
+    {
+
+    }
+
     /**
      * @throws Exception
      */
@@ -118,7 +120,7 @@ class Genetic extends Algorithm
         }
     }
 
-    public function prepareNextGeneration(): void
+    /*public function prepareNextGeneration(): void
     {
         $nextGeneration = [];
         foreach ($this->amountInNextGeneration as $key => $amount) {
@@ -131,7 +133,7 @@ class Genetic extends Algorithm
                 substr($nextGeneration[$i], 0, $this->bits / 2)
                 . substr($nextGeneration[$i + 1], $this->bits / 2, $this->bits / 2);
         }
-    }
+    }*/
 
     /**
      * @throws Exception

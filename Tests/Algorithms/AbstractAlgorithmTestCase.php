@@ -8,9 +8,11 @@ abstract class AbstractAlgorithmTestCase extends TestCase
 {
     abstract public function testAlgorithm();
 
+    /**
+     * @group multipleRunAlgorithm
+     */
     public function testSomeRunning(): void
     {
-//        $this->markTestSkipped('Use this test, after made changes in GreedyAlgorithm.');
         for ($i = 0; $i < 100; $i++) {
             $this->testAlgorithm();
         }

@@ -2,14 +2,16 @@
 
 namespace Algorithms;
 
-class GradientDescent extends Algorithm
+use Models\Result;
+use Models\Step;
+
+class GradientDescent extends AbstractAlgorithm
 {
     public int $maxIteration = 100;
     public float $stepRate = 0.0001;
     public float $resultTolerance = 0.0001;
     public bool $checkRange = false;
 
-    private array $steps = [];
     private float $x;
 
     public function algorithm(): void
@@ -24,19 +26,24 @@ class GradientDescent extends Algorithm
                 break;
             }
             $this->x -= $diff;
-
             $this->controlOutOfRange();
-
             $this->saveStep($this->x);
         }
+
+        $this->saveResult();
     }
 
-    private function saveStep(float $x): void
+    protected function saveStep(float $x = PHP_FLOAT_MAX): void
     {
-        $this->steps[] = [
-            'x' => $x,
-            'fX' => $this->func->f($x)
-        ];
+        $this->steps[] = new Step($x, $this->func->f($x));
+    }
+
+    protected function saveResult(): void
+    {
+        $this->result = new Result(
+            $this->x,
+            $this->func->f($this->x)
+        );
     }
 
     private function controlOutOfRange(): void
@@ -50,26 +57,5 @@ class GradientDescent extends Algorithm
                 $this->x = $this->func->rangeEnd;
             }
         }
-    }
-
-    public function result(): void
-    {
-        $i = 0;
-        foreach ($this->steps as $step) {
-            echo 'Step ' . $i . '. f(' . $step['x'] . ') = ' . $step['fX'] . "\n";
-            $i++;
-        }
-        $f = $this->func->f($this->x);
-        echo "Result: f($this->x) = $f\n";
-    }
-
-    public function getResultX(): float
-    {
-        return $this->x;
-    }
-
-    public function getSteps(): array
-    {
-        return $this->steps;
     }
 }

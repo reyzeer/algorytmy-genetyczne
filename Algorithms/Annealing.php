@@ -2,9 +2,9 @@
 
 namespace Algorithms;
 
-use Representations\BinaryOfFunc;
+use Models\Result;
 
-class Annealing extends Algorithm
+class Annealing extends AbstractBinaryAlgorithm
 {
     private float $iterations = 10000;
     private int $step;
@@ -12,17 +12,11 @@ class Annealing extends Algorithm
     private float $temp = 10;
     private float $tempMin = 1;
 
-    private BinaryOfFunc $representation;
-    private array $steps = [];
-    private float $minX;
-    private float $min;
-    private string $minRepresentation;
     private int $jumps = 0;
     private int $cold = 0;
 
-    public function __construct()
+    public function setUp(): void
     {
-        parent::__construct();
         $this->step = bindec("1000000000");
     }
 
@@ -30,9 +24,10 @@ class Annealing extends Algorithm
     {
         $this->representation = $this->func->randBin();
         $this->representation->checkDirection();
-
-        $this->min = PHP_FLOAT_MAX;
-        $this->minRepresentation = "";
+        $this->result = new Result(
+            PHP_FLOAT_MAX,
+            PHP_FLOAT_MAX
+        );
 
         while ($this->temp > $this->tempMin) {
             for ($i = 0; $i < $this->iterations; $i++) {
@@ -58,25 +53,13 @@ class Annealing extends Algorithm
 
             $this->temp *= $this->alpha;
         }
-
     }
 
     private function saveMin(float $currentValue): void
     {
-        if ($currentValue < $this->min) {
-            $this->minX = $this->func->convertRepresentationToX($this->representation);
-            $this->min = $currentValue;
-            $this->minRepresentation = $this->representation->current();
+        if ($currentValue < $this->result->fX) {
+            $this->saveResult();
         }
-    }
-
-    private function saveStep(): void
-    {
-        $this->steps[] = [
-            'x' => $this->func->convertRepresentationToX($this->representation),
-            'fX' => $this->func->fByRepresentation($this->representation),
-            'binary' => $this->representation->current(),
-        ];
     }
 
     protected function rand0to1(): float
@@ -86,34 +69,9 @@ class Annealing extends Algorithm
 
     public function result(): void
     {
-        $i = 0;
-        foreach ($this->steps as $step) {
-            echo 'Step ' . $i . '. f(' . $step['binary'] . ':' . $step['x'] . ') = ' . $step['fX'] . "\n";
-            $i++;
-        }
-        echo "Result: f($this->minX) = $this->min\n";
+        parent::result();
         echo "Jumps: $this->jumps\n";
         echo "Colds: $this->cold\n";
-    }
-
-    public function getResultX(): float
-    {
-        return $this->minX;
-    }
-
-    public function getResultFX(): float
-    {
-        return $this->min;
-    }
-
-    public function getMinRepresentation(): BinaryOfFunc
-    {
-        return new BinaryOfFunc($this->func, $this->minRepresentation);
-    }
-
-    public function getSteps(): array
-    {
-        return $this->steps;
     }
 
     public function getJumps(): int

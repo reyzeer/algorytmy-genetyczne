@@ -15,6 +15,7 @@
         "psr-4": {
             "Algorithms\\": "Algorithms\\",
             "Functions\\": "Functions\\",
+            "Models\\": "Models\\",
             "Representations\\": "Representations\\"
         }
     },
