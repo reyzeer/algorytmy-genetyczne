@@ -15,9 +15,7 @@ class BinaryOfFuncTest extends TestCase
             $representation->generateRand();
             self::assertLessThanOrEqual(2**22, $representation->key());
             self::assertGreaterThanOrEqual(0, $representation->key());
-            self::assertEquals(1,
-                preg_match('/[0-1]{22}/', $representation->current())
-            );
+            self::assertMatchesRegularExpression('/[0-1]{22}/', $representation->current());
         }
     }
 
@@ -237,6 +235,39 @@ class BinaryOfFuncTest extends TestCase
             'minima on right - step +2' => [
                 'step' => 2,
                 'binary' => '1010101010101010101010'
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider crossProvider
+     */
+    public function testCross(int $bits, string $first, string $second, string $result): void
+    {
+        $func = new Func();
+        $func->bits = $bits;
+        $firstRepresentation = new BinaryOfFunc($func, $first);
+        $secondRepresentation = new BinaryOfFunc($func, $second);
+        $firstRepresentation->cross($secondRepresentation);
+        self::assertEquals($result, $firstRepresentation->current());
+        $firstRepresentation->rewind();
+        self::assertEquals($result, $firstRepresentation->current());
+    }
+
+    public function crossProvider(): array
+    {
+        return [
+            'even' => [
+                'bits' => 22,
+                'first'  => '1111111111111111111111',
+                'second' => '0000000000000000000000',
+                'result' => '1111111111100000000000'
+            ],
+            'odd' => [
+                'bits' => 23,
+                'first'  => '00000000000000000000000',
+                'second' => '11111111111111111111111',
+                'result' => '00000000000011111111111'
             ]
         ];
     }

@@ -5,12 +5,8 @@ namespace Algorithms;
 use Exception;
 use Representations\BinaryOfFunc;
 
-class Genetic extends AbstractAlgorithm
+class Genetic extends AbstractBinaryAlgorithm
 {
-    private $function = null;
-    private $startRange = -1;
-    private $endRange = 2;
-    private $bits = 22;
     private $mutationPossibility = 0.1;
 
     private $numberOfSubjects = 10;
@@ -18,11 +14,10 @@ class Genetic extends AbstractAlgorithm
     private $subjects = [];
     private $subjectValues = [];
 
+    public int $populationSize = 10;
+    public float $survivalRate = 0.25;
+    public int $iterations = 100000;
 
-    private $steps = 100000;
-
-    private int $populationSize = 10;
-    private int $iterations = 100000;
     /** @var BinaryOfFunc[] */
     private array $population = [];
     /** @var float[] */
@@ -31,37 +26,42 @@ class Genetic extends AbstractAlgorithm
     /** @var float[] */
     private $memberGenerationAmount = [];
 
+    /** @var BinaryOfFunc[] */
+    private array $survivedMembers = [];
+    /** @var BinaryOfFunc[] */
+    private array $crossedMembers = [];
 
     public function algorithm(): void
     {
         $this->randomizeStart();
         for ($i = 0; $i < $this->iterations; $i++) {
             $this->calcMembersFX();
-            $this->calcSumOfMembersFX();
-            $this->calcGenerationMemberAmount();
+            $this->selectionSurvivedMembersClosestToTheMinimum();
+//            $this->calcSumOfMembersFX();
+//            $this->calcGenerationMemberAmount();
         }
     }
 
-    protected function randomizeStart(): void
+    public function randomizeStart(): void
     {
         for ($i = 0; $i < $this->populationSize; $i++) {
             $this->population[] = $this->func->randBin();
         }
     }
 
-    protected function calcMembersFX(): void
+    public function calcMembersFX(): void
     {
         foreach ($this->population as $key => $member) {
             $this->memberFX[$key] = $this->func->fByRepresentation($member);
         }
     }
 
-    protected function calcSumOfMembersFX(): void
+    public function calcSumOfMembersFX(): void
     {
         $this->sumOfMembersFX = array_sum($this->memberFX);
     }
 
-    protected function calcGenerationMemberAmount(): void
+    public function calcGenerationMemberAmount(): void
     {
         foreach ($this->population as $key => $member) {
             $memberFX = $this->func->fByRepresentation($member);
@@ -70,8 +70,59 @@ class Genetic extends AbstractAlgorithm
         }
     }
 
+    public function selectionSurvivedMembersClosestToTheMinimum(): void
+    {
+        rsort($this->population);
+        $this->survivedMembers = array_slice($this->population, 0, ceil($this->populationSize * $this->survivalRate));
+    }
+
+    public function crossMembers(): void
+    {
+        $this->crossedMembers = [];
+        $i = 0;
+        $maxCrossedMembers = $this->populationSize - count($this->survivedMembers);
+        foreach ($this->survivedMembers as $firstMember) {
+            foreach ($this->survivedMembers as $secondMember) {
+                if ($firstMember !== $secondMember) {
+                    $crossedMember = (new BinaryOfFunc($this->func, $firstMember->current()));
+                    $crossedMember->cross($secondMember);
+                    $this->crossedMembers[] = $crossedMember;
+                    $i++;
+                    if ($i > $maxCrossedMembers) {
+                        break 2;
+                    }
+                }
+            }
+        }
+    }
+
     protected function prepareNextGeneration(): void
     {
+        $this->population = array_merge(
+            $this->survivedMembers,
+            $this->crossedMembers
+        );
+
+
+        $survivedMembers = $this->selectionSurvivedMembersClosestToTheMinimum();
+        $crossedMembers = [];
+        $i = 0;
+        $maxCrossedMembers = $this->populationSize - count($survivedMembers);
+        foreach ($survivedMembers as $firstMember) {
+            foreach ($survivedMembers as $secondMember) {
+                if ($firstMember !== $secondMember) {
+                    $crossedMember = (new BinaryOfFunc($this->func, $firstMember->current()));
+                    $crossedMember->cross($secondMember);
+                    $crossedMembers[] = $crossedMember;
+                    $i++;
+                    if ($i > $maxCrossedMembers) {
+                        break 2;
+                    }
+                }
+            }
+        }
+
+
         $childs = [];
         foreach ($this->memberGenerationAmount as $key => $amount) {
             // wygenerowanie serii dzieci do połączenia w pary / kandydatów
@@ -83,25 +134,21 @@ class Genetic extends AbstractAlgorithm
     // wykonanie mutacji
     // mutowanie do wykonania na klasie reprezentacji
 
-    public function result(): void
-    {
-
-    }
 
     /**
      * @throws Exception
      */
-    public function run(): void
-    {
-        $this->randomizeStart();
-        for ($i = 0; $i < $this->steps; $i++) {
-            $this->calcMembersFX();
-            $this->calcAmountInNextGeneration();
-            $this->prepareNextGeneration();
-            $this->mutation();
-        }
-        $this->printResults();
-    }
+//    public function run(): void
+//    {
+//        $this->randomizeStart();
+//        for ($i = 0; $i < $this->steps; $i++) {
+//            $this->calcMembersFX();
+//            $this->calcAmountInNextGeneration();
+//            $this->prepareNextGeneration();
+//            $this->mutation();
+//        }
+//        $this->printResults();
+//    }
 
     protected function getValue(string $binary): float
     {
@@ -155,5 +202,41 @@ class Genetic extends AbstractAlgorithm
             echo "$key : {$this->subjects[$key]} => $value\n";
         }
         echo 'Max: ' . max($this->subjectValues);
+    }
+
+    /**
+     * @param BinaryOfFunc[] $population
+     */
+    public function setPopulation(array $population): void
+    {
+        $this->population = $population;
+    }
+
+    public function getPopulation(): array
+    {
+        return $this->population;
+    }
+
+    public function getMemberFX(): array
+    {
+        return $this->memberFX;
+    }
+
+    /**
+     * @param BinaryOfFunc[]
+     */
+    public function setSurvivedMembers(array $survivedMembers): void
+    {
+        $this->survivedMembers = $survivedMembers;
+    }
+
+    public function getSurvivedMembers(): array
+    {
+        return $this->survivedMembers;
+    }
+
+    public function getCrossedMembers(): array
+    {
+        return $this->crossedMembers;
     }
 }

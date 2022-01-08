@@ -13,8 +13,7 @@ class GradientDescentTest extends AbstractAlgorithmTestCase
         $x = $gradient->getResult()->x;
         $steps = $gradient->getSteps();
 
-        self::assertGreaterThanOrEqual($gradient->getFunc()->rangeStart, $x);
-        self::assertLessThanOrEqual($gradient->getFunc()->rangeEnd, $x);
+        self::assertRange($gradient, $x);
         self::assertLessThanOrEqual($gradient->maxIteration + 1, count($steps));
 
         // Going to minima

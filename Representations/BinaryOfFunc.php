@@ -113,4 +113,12 @@ class BinaryOfFunc implements Iterator
             $this->rewind();
         }
     }
+
+    public function cross(BinaryOfFunc $representation): void
+    {
+        $this->representation =
+            substr($this->representation, 0, ceil($this->func->bits / 2)) .
+            substr($representation->current(), 0, floor($this->func->bits / 2));
+        $this->startRepresentation = $this->representation;
+    }
 }

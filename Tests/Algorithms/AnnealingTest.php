@@ -14,9 +14,7 @@ class AnnealingTest extends AbstractAlgorithmTestCase
         $annealing->algorithm();
         $result = $annealing->getResult();
 
-        self::assertGreaterThanOrEqual($annealing->getFunc()->rangeStart, $result->x);
-        self::assertLessThanOrEqual($annealing->getFunc()->rangeEnd, $result->x);
-
+        self::assertRange($annealing, $result->x);
         self::assertGreaterThan(0, $annealing->getJumps());
 
         $steps = $annealing->getSteps();

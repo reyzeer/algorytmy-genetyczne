@@ -12,8 +12,7 @@ class GreedyAlgorithmTest extends AbstractAlgorithmTestCase
         $greedyAlgorithm->algorithm();
         $result = $greedyAlgorithm->getResult();
 
-        self::assertGreaterThanOrEqual($greedyAlgorithm->getFunc()->rangeStart, $result->x);
-        self::assertLessThanOrEqual($greedyAlgorithm->getFunc()->rangeEnd, $result->x);
+        self::assertRange($greedyAlgorithm, $result->x);
 
         $xBinary = $result->representation;
 
