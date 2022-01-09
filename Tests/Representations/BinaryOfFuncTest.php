@@ -2,6 +2,7 @@
 
 namespace Representations;
 
+use Exception;
 use Functions\Func;
 use PHPUnit\Framework\TestCase;
 
@@ -269,6 +270,39 @@ class BinaryOfFuncTest extends TestCase
                 'second' => '11111111111111111111111',
                 'result' => '00000000000011111111111'
             ]
+        ];
+    }
+
+    /**
+     * @dataProvider mutationProvider
+     * @throws Exception
+     */
+    public function testMutation(string $binary): void
+    {
+        $func = new Func();
+        $representation = new BinaryOfFunc($func, $binary);
+        $representation->mutation(1);
+        $result = $representation->current();
+        $mutatedBits = 0;
+        for ($i = 0, $iMax = strlen($binary); $i < $iMax; $i++) {
+            if ($binary[$i] !== $result[$i]) {
+                $mutatedBits++;
+            }
+        }
+        self::assertEquals(1, $mutatedBits);
+        $representation->rewind();
+        self::assertEquals($result, $representation->current());
+    }
+
+    public function mutationProvider(): array
+    {
+        return [
+            'mutation 0 to 1' => [
+                'binary' => '0000000000000000000000',
+            ],
+            'mutation 1 to 0' => [
+                'binary' => '1111111111111111111111',
+            ],
         ];
     }
 }

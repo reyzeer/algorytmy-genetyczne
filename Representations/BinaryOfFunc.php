@@ -2,6 +2,7 @@
 
 namespace Representations;
 
+use Exception;
 use Functions\Func;
 use Iterator;
 use TypeError;
@@ -119,6 +120,18 @@ class BinaryOfFunc implements Iterator
         $this->representation =
             substr($this->representation, 0, ceil($this->func->bits / 2)) .
             substr($representation->current(), 0, floor($this->func->bits / 2));
+        $this->startRepresentation = $this->representation;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function mutation(float $mutationPossibility = 0.5): void
+    {
+        if (random_int(1, 1 / $mutationPossibility) === 1) {
+            $bitIndex = random_int(0, $this->func->bits - 1);
+            $this->representation[$bitIndex] = $this->representation[$bitIndex] === '0' ? '1' : '0';
+        }
         $this->startRepresentation = $this->representation;
     }
 }
