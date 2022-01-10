@@ -1,14 +1,12 @@
 <?php
 
-namespace Representations;
+namespace Representations\TSP;
 
 class Graph
 {
-    private int $numberOfVertices;
+    public int $numberOfVertices;
     /** @var float[][] */
-    private array $weights = [];
-
-    private array $graph =
+    private array $weights =
         [
             [3, 5, 4, 72, 36, 25, 37, 120, 2, 15],
             [31, 5, 34, 71, 3, 2, 7, 10, 12, 15],

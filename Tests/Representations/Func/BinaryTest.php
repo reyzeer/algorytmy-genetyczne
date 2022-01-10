@@ -1,11 +1,10 @@
 <?php
 
-namespace Representations;
+namespace Representations\Func;
 
 use Exception;
 use Functions\Func;
 use PHPUnit\Framework\TestCase;
-use Representations\Func\Binary;
 
 class BinaryTest extends TestCase
 {
