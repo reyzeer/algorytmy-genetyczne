@@ -2,7 +2,7 @@
 
 namespace Functions;
 
-use Representations\BinaryOfFunc;
+use Representations\Func\Binary;
 
 class Func
 {
@@ -20,12 +20,12 @@ class Func
         return sin(10 * M_PI * $x) + 10 * M_PI * $x * cos(10 * M_PI * $x);
     }
 
-    public function fByRepresentation(BinaryOfFunc $representation): float
+    public function fByRepresentation(Binary $representation): float
     {
         return $this->f($this->convertRepresentationToX($representation));
     }
 
-    public function convertRepresentationToX(BinaryOfFunc $representation): float
+    public function convertRepresentationToX(Binary $representation): float
     {
         $binary = $representation->current();
         return ($this->rangeEnd - $this->rangeStart) * (bindec($binary) / (2**$this->bits - 1)) + $this->rangeStart;
@@ -36,9 +36,9 @@ class Func
         return $this->convertRepresentationToX($this->randBin());
     }
 
-    public function randBin(): BinaryOfFunc
+    public function randBin(): Binary
     {
-        $representation = new BinaryOfFunc($this);
+        $representation = new Binary($this);
         $representation->generateRand();
         return $representation;
     }

@@ -5,12 +5,13 @@ namespace Representations;
 use Exception;
 use Functions\Func;
 use PHPUnit\Framework\TestCase;
+use Representations\Func\Binary;
 
-class BinaryOfFuncTest extends TestCase
+class BinaryTest extends TestCase
 {
     public function testGenerateRand(): void
     {
-        $representation = new BinaryOfFunc(new Func());
+        $representation = new Binary(new Func());
 
         for ($i = 0; $i < 100; $i++) {
             $representation->generateRand();
@@ -23,7 +24,7 @@ class BinaryOfFuncTest extends TestCase
     public function testCurrent(): void
     {
         $bits = "1010101010101010101010";
-        $representation = new BinaryOfFunc(new Func(), $bits);
+        $representation = new Binary(new Func(), $bits);
         self::assertEquals($bits, $representation->current());
     }
 
@@ -32,7 +33,7 @@ class BinaryOfFuncTest extends TestCase
      */
     public function testNext(?int $step, string $before, string $after): void
     {
-        $representation = new BinaryOfFunc(new Func(), $before);
+        $representation = new Binary(new Func(), $before);
         if ($step) {
             $representation->next($step);
         } else {
@@ -67,7 +68,7 @@ class BinaryOfFuncTest extends TestCase
      */
     public function testPrev(?int $step, string $before, string $after): void
     {
-        $representation = new BinaryOfFunc(new Func(), $before);
+        $representation = new Binary(new Func(), $before);
         if ($step) {
             $representation->prev($step);
         } else {
@@ -99,7 +100,7 @@ class BinaryOfFuncTest extends TestCase
 
     public function testKey(): void
     {
-        $representation = new BinaryOfFunc(new Func(), "1010101010101010101010");
+        $representation = new Binary(new Func(), "1010101010101010101010");
         self::assertEquals(2796202, $representation->key());
     }
 
@@ -108,7 +109,7 @@ class BinaryOfFuncTest extends TestCase
      */
     public function testValid(string $binary, bool $correct): void
     {
-        $representation = new BinaryOfFunc(new Func(), $binary);
+        $representation = new Binary(new Func(), $binary);
         self::assertEquals($correct, $representation->valid());
     }
 
@@ -129,7 +130,7 @@ class BinaryOfFuncTest extends TestCase
     public function testRewind(): void
     {
         $startRepresentation = "1010101010101010101010";
-        $representation = new BinaryOfFunc(new Func(), $startRepresentation);
+        $representation = new Binary(new Func(), $startRepresentation);
         $representation->next();
         $representation->rewind();
         self::assertEquals($startRepresentation, $representation->current());
@@ -140,7 +141,7 @@ class BinaryOfFuncTest extends TestCase
      */
     public function testCheckDirection(string $binary, bool $onLeft): void
     {
-        $representation = new BinaryOfFunc(new Func(), $binary);
+        $representation = new Binary(new Func(), $binary);
         $representation->checkDirection();
         self::assertEquals($onLeft, $representation->toLeft());
         self::assertEquals($binary, $representation->current());
@@ -165,7 +166,7 @@ class BinaryOfFuncTest extends TestCase
      */
     public function testStepToMinima(?int $step, string $beforeStep, string $afterStep): void
     {
-        $representation = new BinaryOfFunc(new Func(), $beforeStep);
+        $representation = new Binary(new Func(), $beforeStep);
         $representation->checkDirection();
         if ($step) {
             $representation->stepToMinima($step);
@@ -206,7 +207,7 @@ class BinaryOfFuncTest extends TestCase
      */
     public function testBackStepToMinimumOnLeft(?int $step, string $binary): void
     {
-        $representation = new BinaryOfFunc(new Func(), $binary);
+        $representation = new Binary(new Func(), $binary);
         $representation->checkDirection();
         if ($step) {
             $representation->stepToMinima($step);
@@ -247,8 +248,8 @@ class BinaryOfFuncTest extends TestCase
     {
         $func = new Func();
         $func->bits = $bits;
-        $firstRepresentation = new BinaryOfFunc($func, $first);
-        $secondRepresentation = new BinaryOfFunc($func, $second);
+        $firstRepresentation = new Binary($func, $first);
+        $secondRepresentation = new Binary($func, $second);
         $firstRepresentation->cross($secondRepresentation);
         self::assertEquals($result, $firstRepresentation->current());
         $firstRepresentation->rewind();
@@ -280,7 +281,7 @@ class BinaryOfFuncTest extends TestCase
     public function testMutation(string $binary): void
     {
         $func = new Func();
-        $representation = new BinaryOfFunc($func, $binary);
+        $representation = new Binary($func, $binary);
         $representation->mutation(1);
         $result = $representation->current();
         $mutatedBits = 0;

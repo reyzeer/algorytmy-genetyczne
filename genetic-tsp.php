@@ -3,5 +3,5 @@
 
 require_once 'vendor/autoload.php';
 
-$algorithm = new \Algorithms\TSPGenetic();
+$algorithm = new \Algorithms\TSP\Genetic();
 $algorithm->run();

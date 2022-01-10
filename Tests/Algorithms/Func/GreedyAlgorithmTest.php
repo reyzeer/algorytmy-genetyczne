@@ -1,14 +1,14 @@
 <?php
 
-namespace Tests\Algorithms;
+namespace Tests\Algorithms\Func;
 
-use Algorithms\GreedyAlgorithm;
+use Algorithms\Func\GreedyAlgorithmBinary;
 
-class GreedyAlgorithmTest extends AbstractAlgorithmTestCase
+class GreedyAlgorithmTest extends AbstractFuncAlgorithmTestCase
 {
     public function testAlgorithm(): void
     {
-        $greedyAlgorithm = new GreedyAlgorithm();
+        $greedyAlgorithm = new GreedyAlgorithmBinary();
         $greedyAlgorithm->algorithm();
         $result = $greedyAlgorithm->getResult();
 

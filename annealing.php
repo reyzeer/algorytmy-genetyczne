@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-use Algorithms\Annealing;
+use Algorithms\Func\Annealing;
 
 require_once 'vendor/autoload.php';
 

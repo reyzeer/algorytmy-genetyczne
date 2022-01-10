@@ -1,13 +1,13 @@
 <?php
 
-namespace Models;
+namespace Models\Func;
 
 use Functions\Func;
-use Representations\BinaryOfFunc;
+use Representations\Func\Binary;
 
 class Result extends Step
 {
-    public ?BinaryOfFunc $representation = null;
+    public ?Binary $representation = null;
 
     public function __construct(
         public float $x,
@@ -17,7 +17,7 @@ class Result extends Step
     ) {
         parent::__construct($x, $fX, $this->binary);
         if (!empty($this->binary)) {
-            $this->representation = new BinaryOfFunc($this->func, $this->binary);
+            $this->representation = new Binary($this->func, $this->binary);
         }
     }
 }

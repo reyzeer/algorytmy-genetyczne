@@ -1,16 +1,16 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\Func;
 
-use Models\Result;
+use Models\Func\Result;
 
-class Annealing extends AbstractBinaryAlgorithm
+class Annealing extends AbstractBinaryFuncFuncAlgorithm
 {
-    private float $iterations = 10000;
-    private int $step;
-    private float $alpha = 0.8;
-    private float $temp = 10;
-    private float $tempMin = 1;
+    public float $iterations = 10000;
+    public int $step;
+    public float $alpha = 0.8;
+    public float $temp = 10;
+    public float $tempMin = 1;
 
     private int $jumps = 0;
     private int $cold = 0;

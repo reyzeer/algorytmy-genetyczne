@@ -1,11 +1,15 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\TSP;
 
+use Algorithms\GeneticAlgorithm;
+use Algorithms\GeneticAlgorithmInterface;
 use Exception;
 
-class TSPGenetic
+class Genetic implements GeneticAlgorithmInterface
 {
+    use GeneticAlgorithm;
+
     private $steps = 1000;
     private $mutationPossibility = 0.1;
     private $numberOfRoutes = 10;

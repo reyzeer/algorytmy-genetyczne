@@ -1,13 +1,15 @@
 <?php
 
-namespace Representations;
+namespace Representations\Func;
 
 use Exception;
 use Functions\Func;
 use Iterator;
+use Representations\GeneticRepresentationInterface;
+use Representations\RepresentationInterface;
 use TypeError;
 
-class BinaryOfFunc implements Iterator
+class Binary implements Iterator, RepresentationInterface, FuncRepresentationInterface, GeneticRepresentationInterface
 {
     private string $startRepresentation;
 
@@ -115,7 +117,7 @@ class BinaryOfFunc implements Iterator
         }
     }
 
-    public function cross(BinaryOfFunc $representation): void
+    public function cross(Binary|GeneticRepresentationInterface $representation): void
     {
         $this->representation =
             substr($this->representation, 0, ceil($this->func->bits / 2)) .

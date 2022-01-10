@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Algorithms;
+namespace Tests\Algorithms\Func;
 
-use Algorithms\Genetic;
+use Algorithms\Func\Genetic;
 use Exception;
-use Models\Step;
-use Representations\BinaryOfFunc;
+use Models\Func\Step;
+use Representations\Func\Binary;
 
-class GeneticTest extends AbstractAlgorithmTestCase
+class GeneticTest extends AbstractFuncAlgorithmTestCase
 {
     private const MEMBER_000 = '0000000000000000000000';
     private const MEMBER_010 = '0000000000000000000010';
@@ -16,16 +16,16 @@ class GeneticTest extends AbstractAlgorithmTestCase
     private const MEMBER_101 = '0000000000000000000101';
 
     /**
-     * @return BinaryOfFunc[]
+     * @return Binary[]
      */
     private function examplePopulation(Genetic $genetic): array
     {
         return [
-            new BinaryOfFunc($genetic->getFunc(), self::MEMBER_000),
-            new BinaryOfFunc($genetic->getFunc(), self::MEMBER_010),
-            new BinaryOfFunc($genetic->getFunc(), self::MEMBER_011),
-            new BinaryOfFunc($genetic->getFunc(), self::MEMBER_100),
-            new BinaryOfFunc($genetic->getFunc(), self::MEMBER_101)
+            new Binary($genetic->getFunc(), self::MEMBER_000),
+            new Binary($genetic->getFunc(), self::MEMBER_010),
+            new Binary($genetic->getFunc(), self::MEMBER_011),
+            new Binary($genetic->getFunc(), self::MEMBER_100),
+            new Binary($genetic->getFunc(), self::MEMBER_101)
         ];
     }
 
@@ -99,7 +99,7 @@ class GeneticTest extends AbstractAlgorithmTestCase
         $genetic->randomizeStart();
         $population = $genetic->getPopulation();
         foreach ($population as $member) {
-            self::assertInstanceOf(BinaryOfFunc::class, $member);
+            self::assertInstanceOf(Binary::class, $member);
             self::assertRange($genetic, $genetic->getFunc()->convertRepresentationToX($member));
         }
         self::assertCount($genetic->populationSize, $population);
@@ -139,8 +139,8 @@ class GeneticTest extends AbstractAlgorithmTestCase
     {
         $genetic = new Genetic();
         $genetic->setSurvivedMembers([
-            new BinaryOfFunc($genetic->getFunc(), '1111111111111111111111'),
-            new BinaryOfFunc($genetic->getFunc(), '0000000000000000000000'),
+            new Binary($genetic->getFunc(), '1111111111111111111111'),
+            new Binary($genetic->getFunc(), '0000000000000000000000'),
         ]);
         $genetic->crossMembers();
         $crossedMembers = $genetic->getCrossedMembers();
@@ -171,7 +171,7 @@ class GeneticTest extends AbstractAlgorithmTestCase
     public function testMutation(): void
     {
         $binaryOfFunc = $this
-            ->getMockBuilder(BinaryOfFunc::class)
+            ->getMockBuilder(Binary::class)
             ->disableOriginalConstructor()
             ->getMock();
         $binaryOfFunc->expects($this->exactly(2))->method('mutation');

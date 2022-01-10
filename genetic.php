@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-use Algorithms\Genetic;
+use Algorithms\Func\Genetic;
 
 require_once 'vendor/autoload.php';
 

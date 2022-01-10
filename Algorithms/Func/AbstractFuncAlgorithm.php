@@ -1,12 +1,12 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\Func;
 
 use Functions\Func;
-use Models\Result;
-use Models\Step;
+use Models\Func\Result;
+use Models\Func\Step;
 
-abstract class AbstractAlgorithm
+abstract class AbstractFuncAlgorithm
 {
     protected Func $func;
     /** @var Step[] */

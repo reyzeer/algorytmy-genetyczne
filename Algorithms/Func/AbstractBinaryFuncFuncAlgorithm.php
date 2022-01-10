@@ -1,14 +1,14 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\Func;
 
-use Models\Result;
-use Models\Step;
-use Representations\BinaryOfFunc;
+use Models\Func\Result;
+use Models\Func\Step;
+use Representations\Func\Binary;
 
-abstract class AbstractBinaryAlgorithm extends AbstractAlgorithm
+abstract class AbstractBinaryFuncFuncAlgorithm extends AbstractFuncAlgorithm
 {
-    protected BinaryOfFunc $representation;
+    protected Binary $representation;
 
     protected function saveStep(): void
     {

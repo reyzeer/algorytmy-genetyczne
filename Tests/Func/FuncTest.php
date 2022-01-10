@@ -4,7 +4,7 @@ namespace Tests\Algorithms;
 
 use Functions\Func;
 use PHPUnit\Framework\TestCase;
-use Representations\BinaryOfFunc;
+use Representations\Func\Binary;
 
 class FuncTest extends TestCase
 {
@@ -63,7 +63,7 @@ class FuncTest extends TestCase
      */
     public function testConvertBinaryToFloat(string $binary, float $value): void
     {
-        $representation = new BinaryOfFunc($this->func, $binary);
+        $representation = new Binary($this->func, $binary);
         self::assertEqualsWithDelta($value, $this->func->convertRepresentationToX($representation), 0.000001);
     }
 
@@ -81,7 +81,7 @@ class FuncTest extends TestCase
      */
     public function testGetValueByBin(string $binary, float $value): void
     {
-        $representation = new BinaryOfFunc($this->func, $binary);
+        $representation = new Binary($this->func, $binary);
         self::assertEqualsWithDelta($value, $this->func->fByRepresentation($representation), 0.00001);
     }
 

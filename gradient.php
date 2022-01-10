@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-use Algorithms\GradientDescent;
+use Algorithms\Func\GradientDescent;
 
 require_once 'vendor/autoload.php';
 

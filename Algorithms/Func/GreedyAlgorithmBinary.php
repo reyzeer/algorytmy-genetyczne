@@ -1,8 +1,8 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\Func;
 
-class GreedyAlgorithm extends AbstractBinaryAlgorithm
+class GreedyAlgorithmBinary extends AbstractBinaryFuncFuncAlgorithm
 {
     public function algorithm(): void
     {

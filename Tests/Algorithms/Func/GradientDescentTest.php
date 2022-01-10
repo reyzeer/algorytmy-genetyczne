@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Algorithms;
+namespace Tests\Algorithms\Func;
 
-use Algorithms\GradientDescent;
+use Algorithms\Func\GradientDescent;
 
-class GradientDescentTest extends AbstractAlgorithmTestCase
+class GradientDescentTest extends AbstractFuncAlgorithmTestCase
 {
     public function testAlgorithm(): void
     {

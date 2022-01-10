@@ -1,11 +1,11 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\Func;
 
-use Models\Result;
-use Models\Step;
+use Models\Func\Result;
+use Models\Func\Step;
 
-class GradientDescent extends AbstractAlgorithm
+class GradientDescent extends AbstractFuncAlgorithm
 {
     public int $maxIteration = 100;
     public float $stepRate = 0.0001;

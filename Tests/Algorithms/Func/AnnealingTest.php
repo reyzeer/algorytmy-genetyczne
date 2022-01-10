@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Algorithms;
+namespace Tests\Algorithms\Func;
 
-use Algorithms\Annealing;
-use Models\Step;
+use Algorithms\Func\Annealing;
+use Models\Func\Step;
 
-class AnnealingTest extends AbstractAlgorithmTestCase
+class AnnealingTest extends AbstractFuncAlgorithmTestCase
 {
     public function testAlgorithm(): void
     {
