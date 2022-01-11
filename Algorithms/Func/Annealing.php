@@ -32,12 +32,12 @@ class Annealing extends AbstractBinaryFuncFuncAlgorithm
         while ($this->temp > $this->tempMin) {
             for ($i = 0; $i < $this->iterations; $i++) {
 
-                $currentValue = $this->func->fByRepresentation($this->representation);
+                $currentValue = $this->representation->fValue();
                 $this->saveStep();
                 $this->saveMin($currentValue);
 
                 $this->representation->stepToMinima($this->step);
-                $nextValue = $this->func->fByRepresentation($this->representation);
+                $nextValue = $this->representation->fValue();
                 $this->saveStep();
                 $this->saveMin($nextValue);
 

@@ -16,8 +16,6 @@ class Genetic extends AbstractBinaryFuncFuncAlgorithm implements GeneticAlgorith
 {
     use GeneticAlgorithm;
 
-
-
     public function randomizeStart(): void
     {
         for ($i = 0; $i < $this->populationSize; $i++) {
@@ -36,8 +34,8 @@ class Genetic extends AbstractBinaryFuncFuncAlgorithm implements GeneticAlgorith
      */
     public function sortRepresentationsByF(array &$population): void
     {
-        usort($population, function (Binary $a, Binary $b): int {
-            return $this->func->fByRepresentation($a) <=> $this->func->fByRepresentation($b);
+        usort($population, static function (Binary $a, Binary $b): int {
+            return $a->fValue() <=> $b->fValue();
         });
     }
 

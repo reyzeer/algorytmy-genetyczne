@@ -269,7 +269,13 @@ class BinaryTest extends TestCase
                 'first'  => '00000000000000000000000',
                 'second' => '11111111111111111111111',
                 'result' => '00000000000011111111111'
-            ]
+            ],
+            'specific design' => [
+                'bits' => 22,
+                'first'  => '1010101010101010101010',
+                'second' => '0101010101010101010101',
+                'result' => '1010101010110101010101'
+            ],
         ];
     }
 
@@ -302,6 +308,34 @@ class BinaryTest extends TestCase
             ],
             'mutation 1 to 0' => [
                 'binary' => '1111111111111111111111',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider fValueProvider
+     */
+    public function testFValue(string $binary, float $fValue): void
+    {
+        $func = new Func();
+        $representation = new Binary($func, $binary);
+        self::assertEquals($fValue, $representation->fValue());
+    }
+
+    public function fValueProvider(): array
+    {
+        return [
+            [
+                'binary' => "0000000000000000000000",
+                'fValue' => 0.9999999999999988
+            ],
+            [
+                'binary' => "1000000000000000000000",
+                'fValue' => 0.99999438238922
+            ],
+            [
+                'binary' => "1111111111111111111111",
+                'fValue' => 1
             ],
         ];
     }

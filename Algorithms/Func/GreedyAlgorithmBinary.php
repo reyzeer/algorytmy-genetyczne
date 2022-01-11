@@ -9,12 +9,12 @@ class GreedyAlgorithmBinary extends AbstractBinaryFuncFuncAlgorithm
         $this->representation = $this->func->randBin();
         $this->representation->checkDirection();
 
-        $currentFX = $this->func->fByRepresentation($this->representation);
+        $currentFX = $this->representation->fValue();
         $this->saveStep();
         while (true) {
             $this->representation->stepToMinima();
             $this->saveStep();
-            $nextFX = $this->func->fByRepresentation($this->representation);
+            $nextFX = $this->representation->fValue();
             if ($nextFX > $currentFX) {
                 $this->representation->backStepToMinima();
                 $this->saveResult();

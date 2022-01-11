@@ -117,11 +117,16 @@ class Binary implements Iterator, RepresentationInterface, FuncRepresentationInt
         }
     }
 
+    public function fValue(): float
+    {
+        return $this->func->fByRepresentation($this);
+    }
+
     public function cross(Binary|GeneticRepresentationInterface $representation): void
     {
         $this->representation =
             substr($this->representation, 0, ceil($this->func->bits / 2)) .
-            substr($representation->current(), 0, floor($this->func->bits / 2));
+            substr($representation->current(), ceil($this->func->bits / 2));
         $this->startRepresentation = $this->representation;
     }
 
