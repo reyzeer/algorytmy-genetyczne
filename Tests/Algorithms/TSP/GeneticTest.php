@@ -29,16 +29,17 @@ class GeneticTest extends AbstractAlgorithmTestCase
         $genetic->algorithm();
         $result = $genetic->getResult();
         $steps = $genetic->getSteps();
-        $currentRoute = null;
+        $i = 0;
+        $currentRoute = $steps[0];
         foreach ($steps as $step) {
-            if ($currentRoute === null) {
-                $currentRoute = $step;
+            if ($i > 1) {
+                if ($step->cost() > $currentRoute->cost()) {
+                    var_dump($step);
+                }
+                self::assertTrue($currentRoute->cost() >= $step->cost());
             }
-            if ($currentRoute->cost() < $step->cost()) {
-                var_dump($currentRoute);
-            }
-            self::assertTrue($currentRoute->cost() >= $step->cost());
             $currentRoute = $step;
+            $i++;
         }
         self::assertEquals($result, $currentRoute);
     }
