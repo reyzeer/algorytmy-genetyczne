@@ -8,3 +8,4 @@ require_once 'vendor/autoload.php';
 $algorithm = new Annealing;
 $algorithm->run();
 $algorithm->result();
+echo 'Time: ' . $algorithm->getTime() . "\n";

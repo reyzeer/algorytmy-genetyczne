@@ -3,7 +3,6 @@
 namespace Algorithms;
 
 use Exception;
-use Representations\Func\Binary;
 use RuntimeException;
 
 trait GeneticAlgorithm
@@ -49,9 +48,22 @@ trait GeneticAlgorithm
         $this->saveResult();
     }
 
+
+    public function prepareNextGeneration(): void
+    {
+        $this->population = array_merge($this->survivedMembers, $this->crossedMembers);
+    }
+
     /**
-     * @param Binary[] $population
+     * @throws Exception
      */
+    public function mutation(): void
+    {
+        foreach (array_slice($this->population, 1) as $member) {
+            $member->mutation($this->mutationPossibility);
+        }
+    }
+
     public function setPopulation(array $population): void
     {
         $this->population = $population;
@@ -62,9 +74,6 @@ trait GeneticAlgorithm
         return $this->population;
     }
 
-    /**
-     * @param Binary[]
-     */
     public function setSurvivedMembers(array $survivedMembers): void
     {
         $this->survivedMembers = $survivedMembers;

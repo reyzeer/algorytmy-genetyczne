@@ -2,11 +2,12 @@
 
 namespace Algorithms\Func;
 
+use Algorithms\AbstractAlgorithm;
 use Functions\Func;
 use Models\Func\Result;
 use Models\Func\Step;
 
-abstract class AbstractFuncAlgorithm
+abstract class AbstractFuncAlgorithm extends AbstractAlgorithm
 {
     protected Func $func;
     /** @var Step[] */
@@ -23,24 +24,6 @@ abstract class AbstractFuncAlgorithm
     {
         return $this->func;
     }
-
-    public function run(): void
-    {
-        $this->setUp();
-        $startTime = microtime(true);
-        $this->algorithm();
-        $this->time =  microtime(true) - $startTime;
-    }
-
-    public function setUp(): void
-    {
-    }
-
-    abstract public function algorithm(): void;
-
-    abstract protected function saveStep(): void;
-
-    abstract protected function saveResult(): void;
 
     /**
      * @return Step[]

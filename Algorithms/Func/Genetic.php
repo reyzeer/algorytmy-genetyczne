@@ -11,6 +11,9 @@ use Representations\Func\Binary;
  * @property Binary[] $population
  * @property Binary[] $survivedMembers
  * @property Binary[] $crossedMembers
+ *
+ * @method setPopulation(Binary[] $population)
+ * @method setSurvivedMembers(Binary[] $survivedMembers)
  */
 class Genetic extends AbstractBinaryFuncFuncAlgorithm implements GeneticAlgorithmInterface
 {
@@ -30,7 +33,7 @@ class Genetic extends AbstractBinaryFuncFuncAlgorithm implements GeneticAlgorith
     }
 
     /**
-     * @param Binary[]
+     * @param Binary[] $population
      */
     public function sortRepresentationsByF(array &$population): void
     {
@@ -56,21 +59,6 @@ class Genetic extends AbstractBinaryFuncFuncAlgorithm implements GeneticAlgorith
                     }
                 }
             }
-        }
-    }
-
-    public function prepareNextGeneration(): void
-    {
-        $this->population = array_merge($this->survivedMembers, $this->crossedMembers);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function mutation(): void
-    {
-        foreach (array_slice($this->population, 1) as $member) {
-            $member->mutation($this->mutationPossibility);
         }
     }
 

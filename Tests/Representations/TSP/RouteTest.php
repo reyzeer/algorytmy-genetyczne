@@ -3,9 +3,7 @@
 namespace Representations\TSP;
 
 use Exception;
-use Functions\Func;
 use PHPUnit\Framework\TestCase;
-use Representations\Func\Binary;
 
 class RouteTest extends TestCase
 {

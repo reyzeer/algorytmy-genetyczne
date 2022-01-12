@@ -4,16 +4,38 @@ namespace Tests\Algorithms\TSP;
 
 use Algorithms\TSP\Genetic;
 use Exception;
-use Representations\Func\Binary;
+use Models\Func\Step;
 use Representations\TSP\Graph;
 use Representations\TSP\Route;
 use Tests\Algorithms\AbstractAlgorithmTestCase;
 
 class GeneticTest extends AbstractAlgorithmTestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testAlgorithm()
     {
-        // TODO: Implement testAlgorithm() method.
+        $graph = new Graph();
+        $graph->numberOfVertices = 5;
+        $graph->weights = [
+            [2, 4, 6, 8, 10],
+            [10, 9, 8, 7, 6],
+            [1, 2, 3, 4, 5],
+            [2, 2, 3, 4, 4],
+            [4, 4, 3, 2, 2],
+        ];
+        $genetic = new Genetic($graph);
+        $genetic->setUp();
+        $genetic->algorithm();
+        $result = $genetic->getResult();
+        $steps = $genetic->getSteps();
+        $currentRoute = $steps[0];
+        foreach ($steps as $step) {
+            self::assertTrue($currentRoute->cost() >= $step->cost());
+            $currentRoute = $step;
+        }
+        self::assertEquals($result, $currentRoute);
     }
 
     /**
@@ -92,8 +114,59 @@ class GeneticTest extends AbstractAlgorithmTestCase
         foreach ($population as $member) {
             self::assertInstanceOf(Route::class, $member);
             self::assertCount($graph->numberOfVertices, $member->getCoding());
-            self::assertContains($member->getCoding(), [0, 1, 2]);
+            self::assertContains(0, $member->getSequence());
+            self::assertContains(1, $member->getSequence());
+            self::assertContains(2, $member->getSequence());
         }
         self::assertCount($genetic->populationSize, $population);
+    }
+
+    public function testSelectionSurvivedMembersClosestToTheMinimum(): void
+    {
+        $mockRoutes = $this->mockRoutes();
+        $genetic = new Genetic(new Graph());
+        $genetic->setPopulation($mockRoutes);
+        $genetic->populationSize = count($mockRoutes);
+        $genetic->survivalRate = 0.5;
+        $genetic->selectionSurvivedMembersClosestToTheMinimum();
+        self::assertEquals([$mockRoutes[1], $mockRoutes[2]], $genetic->getSurvivedMembers());
+    }
+
+    public function testSortRoutesByCost(): void
+    {
+        $mockRoutes = $this->mockRoutes();
+        $genetic = new Genetic(new Graph());
+        $population = $mockRoutes;
+        $genetic->sortRoutesByCost($population);
+        self::assertEquals([$mockRoutes[1], $mockRoutes[2], $mockRoutes[0]], $population);
+    }
+
+    private function mockRoutes(): array
+    {
+        $route1 = $this->createStub(Route::class);
+        $route1->method('cost')->willReturn(3.0);
+        $route2 = $this->createStub(Route::class);
+        $route2->method('cost')->willReturn(1.0);
+        $route3 = $this->createStub(Route::class);
+        $route3->method('cost')->willReturn(2.0);
+
+        return [$route1, $route2, $route3];
+    }
+
+    public function testCrossMember(): void
+    {
+        $graph = new Graph();
+        $graph->numberOfVertices = 5;
+        $genetic = new Genetic($graph);
+        $genetic->setSurvivedMembers([
+            new Route($graph, [0, 0, 0, 0, 0]),
+            new Route($graph, [1, 1, 1, 1, 0])
+        ]);
+        $genetic->crossMembers();
+        /** @var Route[] $crossedMembers */
+        $crossedMembers = $genetic->getCrossedMembers();
+        self::assertCount(2, $crossedMembers);
+        self::assertEquals([0, 0, 0, 1, 0], $crossedMembers[0]->getCoding());
+        self::assertEquals([1, 1, 1, 0 ,0], $crossedMembers[1]->getCoding());
     }
 }

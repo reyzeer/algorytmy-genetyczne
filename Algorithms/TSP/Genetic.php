@@ -2,6 +2,7 @@
 
 namespace Algorithms\TSP;
 
+use Algorithms\AbstractAlgorithm;
 use Algorithms\GeneticAlgorithm;
 use Algorithms\GeneticAlgorithmInterface;
 use Exception;
@@ -9,11 +10,23 @@ use Representations\TSP\Graph;
 use Representations\TSP\Route;
 use RuntimeException;
 
-class Genetic implements GeneticAlgorithmInterface
+/**
+ * @property Route[] $population
+ * @property Route[] $survivedMembers
+ * @property Route[] $crossedMembers
+ *
+ * @method setPopulation(Route[] $population)
+ * @method setSurvivedMembers(Route[] $survivedMembers)
+ */
+class Genetic extends AbstractAlgorithm implements GeneticAlgorithmInterface
 {
     use GeneticAlgorithm {
         setUp as public geneticAlgorithmSetUp;
     }
+
+    /** @var Route[] */
+    private array $step = [];
+    private Route $result;
 
     public function __construct(private Graph $graph)
     {
@@ -26,7 +39,7 @@ class Genetic implements GeneticAlgorithmInterface
     {
         $this->geneticAlgorithmSetUp();
 
-        if ($this->graph->numberOfVertices < 2) {
+        if ($this->graph->numberOfVertices < 3) {
             throw new RuntimeException('Number of vertices must be greater than 2.');
         }
     }
@@ -43,138 +56,81 @@ class Genetic implements GeneticAlgorithmInterface
         }
     }
 
-    private $steps = 1000;
-    private $mutationPossibility = 0.1;
-    private $numberOfRoutes = 10;
-
-    private $routes = [];
-    private $routeCosts = [];
-    private $amountInNextGeneration = [];
-
-    private $currentBestCost = PHP_INT_MAX;
-    private $currentBestRoute = [];
-
-    public function run(): void
+    public function selectionSurvivedMembersClosestToTheMinimum(): void
     {
-        $this->randomizeStartRoutes();
-        for ($i = 0; $i < $this->steps; $i++) {
-            $this->calcCosts();
-            $this->calcAmountInNextGeneration();
-            $this->prepareNextGeneration();
-            $this->mutation();
-        }
-        $this->printBestRoute();
-    }
-
-    public function randomizeStartRoutes(): void
-    {
-        for ($i = 0; $i < $this->numberOfRoutes; $i++) {
-            $this->routes[] = $this->randomizeRoute();
-        }
-    }
-
-    protected function randomizeRoute(): array
-    {
-        $route = range(0, $this->vectors - 1);
-        shuffle($route);
-        return $route;
-    }
-
-    public function calcCosts(): void
-    {
-        foreach ($this->routes as $key => $route) {
-            $this->routeCosts[$key] = $this->calcCost($route);
-            if ($this->routeCosts[$key] < $this->currentBestCost) {
-                $this->currentBestRoute = $route;
-                $this->currentBestCost = $this->routeCosts[$key];
-            }
-        }
-    }
-
-    protected function calcCost(array $route): int
-    {
-        $cost = 0;
-        $firstVector = null;
-        $currentVectorIndex = null;
-        foreach ($route as $currentVectorIndex) {
-            $previousVector = $currentVectorIndex;
-            if ($firstVector === null) {
-                $firstVector = $currentVectorIndex;
-                continue;
-            }
-            $cost += $this->getEdgeCost($previousVector, $currentVectorIndex);
-        }
-        $cost += $this->getEdgeCost($currentVectorIndex, $firstVector);
-        return $cost;
-    }
-
-    protected function getEdgeCost(int $firstVectorIndex, int $secondVectorIndex)
-    {
-        return $this->graph[$firstVectorIndex][$secondVectorIndex];
-    }
-
-    protected function calcAmountInNextGeneration(): void
-    {
-        $sumOfCosts = array_sum($this->routeCosts);
-        foreach ($this->routeCosts as $key => $value) {
-            $this->amountInNextGeneration[$key] = round($this->numberOfRoutes * $value / $sumOfCosts);
-        }
-    }
-
-    protected function prepareNextGeneration(): void
-    {
-        $nextGeneration = [];
-        foreach ($this->amountInNextGeneration as $key => $amount) {
-            for ($i = 0; $i < $amount; $i++) {
-                $nextGeneration[] = $this->routes[$key];
-            }
-        }
-        for ($i = 0; $i < $this->numberOfRoutes; $i += 2) {
-            $this->routes[$i] = $this->crossRoute($nextGeneration[$i], $nextGeneration[$i + 1]);
-            $this->routes[$i + 1] = $this->crossRoute($nextGeneration[$i + 1], $nextGeneration[$i]);
-        }
-    }
-
-    protected function crossRoute(array $firstRoute, array $secondRoute): array
-    {
-        $newRoute = [];
-        for ($i = 0; $i < $this->vectors / 2; $i++) {
-            $newRoute[$i] = $firstRoute[$i];
-        }
-        for ($i = $this->vectors / 2; $i < $this->vectors; $i++) {
-            if (!in_array($secondRoute[$i], $newRoute, true)) {
-                $newRoute[] = $secondRoute[$i];
-            }
-        }
-        foreach (range(0, $this->vectors - 1) as $vectorIndex) {
-            if (!in_array($vectorIndex, $newRoute, true)) {
-                $newRoute[] = $vectorIndex;
-            }
-        }
-        return $newRoute;
+        $this->sortRoutesByCost($this->population);
+        $this->survivedMembers = array_slice($this->population, 0, ceil($this->populationSize * $this->survivalRate));
     }
 
     /**
-     * @throws Exception
+     * @param Route[] $routes
      */
-    public function mutation(): void
+    public function sortRoutesByCost(array &$routes): void
     {
-        foreach ($this->routes as $key => $route) {
-            if (random_int(0, 1 / $this->mutationPossibility) === 1) {
-                $firstRouteElement = random_int(0, $this->vectors - 1);
-                $secondRouteElement = random_int(0, $this->vectors - 1);
-                $temp = $this->routes[$key][$firstRouteElement];
-                $this->routes[$key][$firstRouteElement] = $this->routes[$key][$secondRouteElement];
-                $this->routes[$key][$secondRouteElement] = $temp;
+        usort($routes, static function (Route $a, Route $b): int {
+            return $a->cost() <=> $b->cost();
+        });
+    }
+
+    public function crossMembers(): void
+    {
+        $this->crossedMembers = [];
+        $i = 0;
+        $maxCrossedMembers = $this->populationSize - count($this->survivedMembers);
+        foreach ($this->survivedMembers as $firstMember) {
+            foreach ($this->survivedMembers as $secondMember) {
+                if ($firstMember !== $secondMember) {
+                    $crossedMember = (new Route($this->graph, $firstMember->getCoding()));
+                    $crossedMember->cross($secondMember);
+                    $this->crossedMembers[] = $crossedMember;
+                    $i++;
+                    if ($i >= $maxCrossedMembers) {
+                        break 2;
+                    }
+                }
             }
         }
     }
 
-    protected function printBestRoute(): void
+    public function saveStep(): void
     {
-        echo "Best cost: $this->currentBestCost\n" .
-            implode(' - ', $this->currentBestRoute) .
-            ' - ' . $this->currentBestRoute[0];
+        $this->step[] = $this->population[0];
     }
 
+    /**
+     * @return Route[]
+     */
+    public function getSteps(): array
+    {
+        return $this->step;
+    }
+
+    public function saveResult(): void
+    {
+        $this->result = $this->population[0];
+    }
+
+    public function getResult(): Route
+    {
+        return $this->result;
+    }
+
+    public function result(): void
+    {
+        $i = 0;
+        foreach ($this->step as $step) {
+            echo "$i. Route: ";
+            $this->printRoute($step);
+            echo " - Cost: " . $step->cost() . "\n";
+            $i++;
+        }
+        echo 'Best route: ';
+        $this->printRoute($this->result);
+        echo " - Cost: " . $this->result->cost() . "\n";
+    }
+
+    private function printRoute(Route $step): void
+    {
+        echo implode(' - ', $step->getSequence()) . ' - ' . $step->getSequence()[0];
+    }
 }
