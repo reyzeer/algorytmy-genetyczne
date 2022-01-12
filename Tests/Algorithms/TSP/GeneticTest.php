@@ -4,7 +4,6 @@ namespace Tests\Algorithms\TSP;
 
 use Algorithms\TSP\Genetic;
 use Exception;
-use Models\Func\Step;
 use Representations\TSP\Graph;
 use Representations\TSP\Route;
 use Tests\Algorithms\AbstractAlgorithmTestCase;
@@ -30,8 +29,14 @@ class GeneticTest extends AbstractAlgorithmTestCase
         $genetic->algorithm();
         $result = $genetic->getResult();
         $steps = $genetic->getSteps();
-        $currentRoute = $steps[0];
+        $currentRoute = null;
         foreach ($steps as $step) {
+            if ($currentRoute === null) {
+                $currentRoute = $step;
+            }
+            if ($currentRoute->cost() < $step->cost()) {
+                var_dump($currentRoute);
+            }
             self::assertTrue($currentRoute->cost() >= $step->cost());
             $currentRoute = $step;
         }

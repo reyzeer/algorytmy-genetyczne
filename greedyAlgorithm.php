@@ -8,3 +8,4 @@ require_once 'vendor/autoload.php';
 $algorithm = new GreedyAlgorithmBinary();
 $algorithm->run();
 $algorithm->result();
+echo 'Time: ' . $algorithm->getTime() . "\n";
