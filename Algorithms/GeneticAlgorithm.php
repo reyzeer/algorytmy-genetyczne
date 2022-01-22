@@ -10,11 +10,15 @@ trait GeneticAlgorithm
     public int $populationSize = 20;
     public float $survivalRate = 0.25;
     public int $iterations = 2000;
+    public int $minIterations = 1000;
+    public int $iterationsWithoutImproveResultBeforeStop = 500;
     public float $mutationPossibility = 0.5;
 
     private array $population = [];
     private array $survivedMembers = [];
     private array $crossedMembers = [];
+    private int $i = 0;
+    private int $iterationsWithoutImproveResult = 0;
 
     /**
      * @throws RuntimeException
@@ -38,16 +42,19 @@ trait GeneticAlgorithm
     public function algorithm(): void
     {
         $this->randomizeStart();
-        for ($i = 0; $i < $this->iterations; $i++) {
+        for ($this->i = 0; $this->i < $this->iterations; $this->i++) {
             $this->selectionSurvivedMembersClosestToTheMinimum();
             $this->crossMembers();
             $this->prepareNextGeneration();
             $this->mutation();
             $this->saveStep();
+            $this->checkAlgorithmImproveResult();
+            if ($this->checkAlgorithmStoppedImproveResult()) {
+                break;
+            }
         }
         $this->saveResult();
     }
-
 
     public function prepareNextGeneration(): void
     {
@@ -62,6 +69,19 @@ trait GeneticAlgorithm
         foreach (array_slice($this->population, 1) as $member) {
             $member->mutation($this->mutationPossibility);
         }
+    }
+
+    abstract public function checkAlgorithmImproveResult(): void;
+
+    public function checkAlgorithmStoppedImproveResult(): bool
+    {
+        if ($this->i <= $this->minIterations) {
+            return false;
+        }
+        if ($this->iterationsWithoutImproveResult >= $this->iterationsWithoutImproveResultBeforeStop) {
+            return true;
+        }
+        return false;
     }
 
     public function setPopulation(array $population): void
@@ -87,5 +107,10 @@ trait GeneticAlgorithm
     public function getCrossedMembers(): array
     {
         return $this->crossedMembers;
+    }
+
+    public function getIterationsWithoutImproveResult(): int
+    {
+        return $this->iterationsWithoutImproveResult;
     }
 }

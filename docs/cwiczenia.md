@@ -15,3 +15,8 @@ Zajęcia 2
     warunek zakończenia, prawdopodobieństwo mutacji i krzyżowania), aby poprawić
     efektywność algorytmu. Zaproponuj własny operator krzyżowania i mutacji,
     i zbadaj skuteczność algorytmu z tymi operatorami.
+
+
+Linki powiązne:
+https://cran.r-project.org/web/packages/GA/vignettes/GA.html#constrained-optimisation
+https://en.wikipedia.org/wiki/Test_functions_for_optimization

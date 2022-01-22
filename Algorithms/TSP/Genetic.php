@@ -25,7 +25,7 @@ class Genetic extends AbstractAlgorithm implements GeneticAlgorithmInterface
     }
 
     /** @var Route[] */
-    private array $step = [];
+    private array $steps = [];
     private Route $result;
 
     public function __construct(private Graph $graph)
@@ -92,9 +92,19 @@ class Genetic extends AbstractAlgorithm implements GeneticAlgorithmInterface
         }
     }
 
+    public function checkAlgorithmImproveResult(): void
+    {
+        $steps = count($this->steps);
+        if ($steps > 2 && $this->steps[$steps-1]->cost() >= $this->steps[$steps-2]->cost()) {
+            $this->iterationsWithoutImproveResult++;
+        } else {
+            $this->iterationsWithoutImproveResult = 0;
+        }
+    }
+
     public function saveStep(): void
     {
-        $this->step[] = $this->population[0];
+        $this->steps[] = $this->population[0];
     }
 
     /**
@@ -102,7 +112,7 @@ class Genetic extends AbstractAlgorithm implements GeneticAlgorithmInterface
      */
     public function getSteps(): array
     {
-        return $this->step;
+        return $this->steps;
     }
 
     public function saveResult(): void
@@ -118,7 +128,7 @@ class Genetic extends AbstractAlgorithm implements GeneticAlgorithmInterface
     public function result(): void
     {
         $i = 0;
-        foreach ($this->step as $step) {
+        foreach ($this->steps as $step) {
             echo "$i. Route: ";
             $this->printRoute($step);
             echo " - Cost: " . $step->cost() . "\n";

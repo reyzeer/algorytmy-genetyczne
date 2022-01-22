@@ -39,6 +39,8 @@ $graph->weights =
 
 $algorithm = new Genetic($graph);
 $algorithm->iterations = 1000000;
+$algorithm->minIterations = 100000;
+$algorithm->iterationsWithoutImproveResultBeforeStop = 10000;
 $algorithm->run();
 $algorithm->result();
 echo 'Time: ' . $algorithm->getTime() . "\n";

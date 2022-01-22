@@ -5,6 +5,9 @@ namespace Tests\Algorithms\Func;
 use Algorithms\Func\Genetic;
 use Exception;
 use Models\Func\Step;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionProperty;
 use Representations\Func\Binary;
 
 class GeneticTest extends AbstractFuncAlgorithmTestCase
@@ -182,5 +185,132 @@ class GeneticTest extends AbstractFuncAlgorithmTestCase
             $binaryOfFunc
         ]);
         $genetic->mutation();
+    }
+
+    /**
+     * @dataProvider checkAlgorithmImproveResultProvider
+     */
+    public function testCheckAlgorithmImproveResult(array $steps, int $iterationsWithoutImprove): void
+    {
+        $genetic = new Genetic();
+        $func = $genetic->getFunc();
+        foreach ($steps as $step) {
+            $genetic->setPopulation([new Binary($func, $step)]);
+            $genetic->saveStep();
+            $genetic->checkAlgorithmImproveResult();
+        }
+        self::assertEquals($iterationsWithoutImprove, $genetic->getIterationsWithoutImproveResult());
+    }
+
+    public function checkAlgorithmImproveResultProvider(): array
+    {
+        return [
+            'to few elements (1)' => [
+                'steps' => [
+                    self::MEMBER_101
+                ],
+                'iterationsWithoutImprove' => 0,
+            ],
+            'to few elements (2)' => [
+                'steps' => [
+                    self::MEMBER_100,
+                    self::MEMBER_101
+                ],
+                'iterationsWithoutImprove' => 0,
+            ],
+            '1 iterations without improve' => [
+                'steps' => [
+                    self::MEMBER_101,
+                    self::MEMBER_101,
+                    self::MEMBER_101,
+                ],
+                'iterationsWithoutImprove' => 1,
+            ],
+            '2 iterations without improve' => [
+                'steps' => [
+                    self::MEMBER_101,
+                    self::MEMBER_101,
+                    self::MEMBER_101,
+                    self::MEMBER_101,
+                ],
+                'iterationsWithoutImprove' => 2,
+            ],
+            'reset iterations after improve' => [
+                'steps' => [
+                    self::MEMBER_100,
+                    self::MEMBER_100,
+                    self::MEMBER_100,
+                    self::MEMBER_101,
+                ],
+                'iterationsWithoutImprove' => 0,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider checkAlgorithmStoppedImproveResultProvider
+     */
+    public function testCheckAlgorithmStoppedImproveResult(
+        int $i,
+        int $minIterations,
+        int $iterationsWithoutImproveResult,
+        int $iterationsWithoutImproveResultBeforeStop,
+        bool $stopped
+    ): void {
+        $genetic = new Genetic();
+
+        $reflector = new ReflectionProperty(Genetic::class, 'i');
+        $reflector->setAccessible(true);
+        $reflector->setValue($genetic, $i);
+
+        $reflector = new ReflectionProperty(Genetic::class, 'iterationsWithoutImproveResult');
+        $reflector->setAccessible(true);
+        $reflector->setValue($genetic, $iterationsWithoutImproveResult);
+
+        $genetic->minIterations = $minIterations;
+        $genetic->iterationsWithoutImproveResultBeforeStop = $iterationsWithoutImproveResultBeforeStop;
+
+        self::assertEquals($stopped, $genetic->checkAlgorithmStoppedImproveResult());
+    }
+
+    public function checkAlgorithmStoppedImproveResultProvider(): array
+    {
+        return [
+            'i < minIterations' => [
+                'i' => 5,
+                'minIterations' => 10,
+                'iterationsWithoutImproveResult' => 5,
+                'iterationsWithoutImproveResultBeforeStop' => 3,
+                'stopped' => false
+            ],
+            'i == minIterations' => [
+                'i' => 10,
+                'minIterations' => 10,
+                'iterationsWithoutImproveResult' => 5,
+                'iterationsWithoutImproveResultBeforeStop' => 3,
+                'stopped' => false
+            ],
+            'to much results without improve, not equal' => [
+                'i' => 11,
+                'minIterations' => 10,
+                'iterationsWithoutImproveResult' => 5,
+                'iterationsWithoutImproveResultBeforeStop' => 3,
+                'stopped' => true
+            ],
+            'to much results without improve, equal' => [
+                'i' => 11,
+                'minIterations' => 10,
+                'iterationsWithoutImproveResult' => 3,
+                'iterationsWithoutImproveResultBeforeStop' => 3,
+                'stopped' => true
+            ],
+            'result still fresh' => [
+                'i' => 11,
+                'minIterations' => 10,
+                'iterationsWithoutImproveResult' => 3,
+                'iterationsWithoutImproveResultBeforeStop' => 5,
+                'stopped' => false
+            ],
+        ];
     }
 }

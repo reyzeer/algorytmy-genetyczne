@@ -41,7 +41,7 @@ fitness <- function(x)
 GA <- ga("real-valued", fitness = fitness,
          lower = c(x1LBound, x2LBound), upper = c(x1RBound, x2RBound),
          # selection = GA:::gareal_lsSelection_R,
-         maxiter = 10000, run = 1000) # seed = 123)
+         maxiter = 10000, run = 5000) # seed = 123)
 summary(GA)
 plot(GA)
 

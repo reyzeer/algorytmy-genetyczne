@@ -16,6 +16,7 @@
             "Algorithms\\": "Algorithms\\",
             "Functions\\": "Functions\\",
             "Models\\": "Models\\",
+            "Reader\\": "Reader\\",
             "Representations\\": "Representations\\"
         }
     },

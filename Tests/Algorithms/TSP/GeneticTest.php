@@ -33,9 +33,6 @@ class GeneticTest extends AbstractAlgorithmTestCase
         $currentRoute = $steps[0];
         foreach ($steps as $step) {
             if ($i > 1) {
-                if ($step->cost() > $currentRoute->cost()) {
-                    var_dump($step);
-                }
                 self::assertTrue($currentRoute->cost() >= $step->cost());
             }
             $currentRoute = $step;
@@ -174,5 +171,67 @@ class GeneticTest extends AbstractAlgorithmTestCase
         self::assertCount(2, $crossedMembers);
         self::assertEquals([0, 0, 0, 1, 0], $crossedMembers[0]->getCoding());
         self::assertEquals([1, 1, 1, 0 ,0], $crossedMembers[1]->getCoding());
+    }
+
+    /**
+     * @dataProvider checkAlgorithmImproveResultProvider
+     */
+    public function testCheckAlgorithmImproveResult(array $steps, int $iterationsWithoutImprove): void
+    {
+        $graph = new Graph();
+        $graph->numberOfVertices = 5;
+        $genetic = new Genetic($graph);
+        foreach ($steps as $step) {
+            $genetic->setPopulation([$step]);
+            $genetic->saveStep();
+            $genetic->checkAlgorithmImproveResult();
+        }
+        self::assertEquals($iterationsWithoutImprove, $genetic->getIterationsWithoutImproveResult());
+    }
+
+    public function checkAlgorithmImproveResultProvider(): array
+    {
+        $mockRoutes = $this->mockRoutes();
+        return [
+            'to few elements (1)' => [
+                'steps' => [
+                    $mockRoutes[0]
+                ],
+                'iterationsWithoutImprove' => 0,
+            ],
+            'to few elements (2)' => [
+                'steps' => [
+                    $mockRoutes[0],
+                    $mockRoutes[1]
+                ],
+                'iterationsWithoutImprove' => 0,
+            ],
+            '1 iterations without improve' => [
+                'steps' => [
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                ],
+                'iterationsWithoutImprove' => 1,
+            ],
+            '2 iterations without improve' => [
+                'steps' => [
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                ],
+                'iterationsWithoutImprove' => 2,
+            ],
+            'reset iterations after improve' => [
+                'steps' => [
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                    $mockRoutes[0],
+                    $mockRoutes[1],
+                ],
+                'iterationsWithoutImprove' => 0,
+            ],
+        ];
     }
 }

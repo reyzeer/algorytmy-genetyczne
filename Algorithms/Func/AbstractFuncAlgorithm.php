@@ -11,7 +11,7 @@ abstract class AbstractFuncAlgorithm extends AbstractAlgorithm
 {
     protected Func $func;
     /** @var Step[] */
-    protected array $steps;
+    protected array $steps = [];
     protected Result $result;
     protected float $time;
 

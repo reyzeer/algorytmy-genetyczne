@@ -4,7 +4,6 @@ namespace Algorithms\Func;
 
 use Algorithms\GeneticAlgorithm;
 use Algorithms\GeneticAlgorithmInterface;
-use Exception;
 use Representations\Func\Binary;
 
 /**
@@ -66,5 +65,15 @@ class Genetic extends AbstractBinaryFuncFuncAlgorithm implements GeneticAlgorith
     {
         $this->representation = $this->population[0];
         parent::saveStep();
+    }
+
+    public function checkAlgorithmImproveResult(): void
+    {
+        $steps = count($this->steps);
+        if ($steps > 2 && $this->steps[$steps-1]->fX >= $this->steps[$steps-2]->fX) {
+            $this->iterationsWithoutImproveResult++;
+        } else {
+            $this->iterationsWithoutImproveResult = 0;
+        }
     }
 }
