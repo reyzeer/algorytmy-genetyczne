@@ -57,6 +57,11 @@ class GraphBuilder
 
     public function printInfo(): void
     {
-
+        echo "Graph loaded.\n" .
+             "NAME: " . $this->reader->name . " \n" .
+             "TYPE: " . $this->reader->type . " \n" .
+             "COMMENT: " . $this->reader->comment . " \n" .
+             "DIMENSION: " . $this->reader->dimension . " \n" .
+             "EDGE_WEIGHT_TYPE: " . $this->reader->edgeWeightType . " \n";
     }
 }
