@@ -14,6 +14,7 @@
     "autoload": {
         "psr-4": {
             "Algorithms\\": "Algorithms\\",
+            "Builder\\": "Builder",
             "Functions\\": "Functions\\",
             "Models\\": "Models\\",
             "Reader\\": "Reader\\",
