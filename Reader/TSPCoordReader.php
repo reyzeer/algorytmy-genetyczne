@@ -16,8 +16,8 @@ class TSPCoordReader
     public const EDGE_COORD_SECTION = 'EDGE_COORD_SECTION';
     private const EOF = 'EOF';
 
-    private const VERTEX_TYPE = 'VERTEX';
-    private const EDGE_TYPE = 'EDGE';
+    public const VERTEX_TYPE = 'VERTEX';
+    public const EDGE_TYPE = 'EDGE';
 
     private const AVAILABLE_TYPES = ['TSP'];
     private const AVAILABLE_VERTEX_TYPES = ['EUC_2D', 'ATT', 'EUC_2D'];
@@ -88,7 +88,7 @@ class TSPCoordReader
         $this->nodeCoords[] = $coords;
     }
 
-    private function getEdgeWeightDataType(): string
+    public function getEdgeWeightDataType(): string
     {
         if (in_array($this->edgeWeightType, self::AVAILABLE_VERTEX_TYPES)) {
             return self::VERTEX_TYPE;
