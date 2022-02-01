@@ -12,8 +12,8 @@ tspFitness <- function(tour, ...) 1/tourLength(tour, ...) # ponieważ algorytm m
 
 GA <- ga(
   type = "permutation", fitness = tspFitness, distMatrix = D,
-  min = 1, max = attr(eurodist, "Size"), popSize = 200, maxiter = 100000,
-  run = 50000, pmutation = 0.2
+  min = 1, max = attr(eurodist, "Size"), popSize = 200, maxiter = 1000,
+  run = 500, pmutation = 0.2
 )
 
 summary(GA)
