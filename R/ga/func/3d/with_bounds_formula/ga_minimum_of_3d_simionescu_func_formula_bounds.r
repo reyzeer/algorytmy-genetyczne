@@ -2,7 +2,7 @@
 library(GA)
 
 # https://cran.r-project.org/web/packages/GA/vignettes/GA.html#constrained-optimisation
-# Simionescu function
+  # Simionescu function
 # https://en.wikipedia.org/wiki/Test_functions_for_optimization
 func3d <- function(x)
 {
