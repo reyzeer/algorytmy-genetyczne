@@ -33,7 +33,7 @@ image(x1, x2, matrix(ifelse(apply(x12, 1, c2) <= 0, 0, NA), ngrid, ngrid), col =
 contour(x1, x2, matrix(apply(x12, 1, func3d), ngrid, ngrid), nlevels = 21, add = TRUE)
 
 fitness <- function(x) 
-{ 
+{ r
   f <- -func3d(x)                    # we need to maximise -func3d(x)
   pen <- sqrt(.Machine$double.xmax)  # penalty term
   penalty1 <- max(c1(x),0)*pen       # penalisation for 1st inequality constraint

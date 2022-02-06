@@ -1,3 +1,5 @@
+library(GA)
+
 # Baday graf - odległości miedzy miastami
 data("eurodist", package = "datasets")
 D <- as.matrix(eurodist)

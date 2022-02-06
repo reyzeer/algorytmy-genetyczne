@@ -2,7 +2,6 @@
 
 namespace Tests\Algorithms;
 
-use Algorithms\Func\AbstractFuncAlgorithm;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractAlgorithmTestCase extends TestCase

@@ -5,8 +5,6 @@ namespace Tests\Algorithms\Func;
 use Algorithms\Func\Genetic;
 use Exception;
 use Models\Func\Step;
-use ReflectionClass;
-use ReflectionException;
 use ReflectionProperty;
 use Representations\Func\Binary;
 

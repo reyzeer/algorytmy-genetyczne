@@ -2,8 +2,6 @@
 
 namespace Algorithms;
 
-use Models\Func\Result;
-
 abstract class AbstractAlgorithm
 {
     protected float $time;

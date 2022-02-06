@@ -325,10 +325,10 @@ Implementacje metod mutacji są osadzone w klasie reprezentacji binarnej:
 ./Representations/Func/Binary.php
 ```
 
-Mutacja została zaimplementowana jako podział ciągu bitowego na pół.
+Krzyżowanie zostało zaimplementowane jako podział ciągu bitowego na pół.
 Gdzie pierwszej 11 bitów jest branych z pierwszego ciągu, a drugie 11 bitów z drugiego ciągu.
 
-Krzyżowanie zostało zaimplementowane, jako losowa zmiana jednego bitu na wartość przeciwną.
+Mutacja została zaimplementowana, jako losowa zmiana jednego bitu na wartość przeciwną.
 
 Testy weryfikujące klasy `./Algorithms/Func/Genetic.php`, `./Representations/Func/Binary.php` i trait `./Algorithms/GeneticAlgorithm.php`
 
